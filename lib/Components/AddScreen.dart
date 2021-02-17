@@ -56,21 +56,40 @@ class _AddFormState extends State<AddForm> {
           Container(
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/backgrounds/test_2.jpg"),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.linearToSrgbGamma()
-              )
-            ),
+                image: DecorationImage(
+                    image: AssetImage("assets/images/backgrounds/test_2.jpg"),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.linearToSrgbGamma())),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 _nameField(controllers: _controllers, decorator: _decorator),
                 _descField(controllers: _controllers, decorator: _decorator),
-                _locationField(controllers: _controllers, decorator: _decorator),
-                _qualityField(controllers: _controllers, decorator: _decorator),
+                _locationField(
+                    controllers: _controllers, decorator: _decorator),
                 _priceField(controllers: _controllers, decorator: _decorator),
+                _qualityField(controllers: _controllers, decorator: _decorator),
                 _tortyField(controllers: _controllers, decorator: _decorator),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      RaisedButton.icon(
+                        onPressed: () {},
+                        icon: Icon(Icons.check),
+                        label: Text("Aceptar"),
+                        shape: StadiumBorder(),
+                      ),
+                      RaisedButton.icon(
+                        onPressed: () {},
+                        icon: Icon(Icons.cancel),
+                        label: Text("Cancelar"),
+                        shape: StadiumBorder(),
+                      ),
+                    ],
+                  ),
+                ),
                 //TODO implementar botones para confirmar y cancelar formulario y poner bonito (row)
               ],
             ),
