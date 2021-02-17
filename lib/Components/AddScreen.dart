@@ -6,7 +6,13 @@ class AddScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Añade tu tortilla'),
+        title: Text(
+          'Añade tu tortilla',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.amberAccent,
+        iconTheme: IconThemeData(color: Colors.black),
+        centerTitle: true,
       ),
       body: AddForm(),
     );
@@ -45,24 +51,32 @@ class _AddFormState extends State<AddForm> {
     ];
     return Form(
       key: _formKey,
-      child: ListView(children: [
-        Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Placeholder(
-              fallbackHeight: 50,
-              fallbackWidth: 50,
+      child: ListView(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/backgrounds/test_2.jpg"),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.linearToSrgbGamma()
+              )
             ),
-            _nameField(controllers: _controllers, decorator: _decorator),
-            _descField(controllers: _controllers, decorator: _decorator),
-            _locationField(controllers: _controllers, decorator: _decorator),
-            _qualityField(controllers: _controllers, decorator: _decorator),
-            _priceField(controllers: _controllers, decorator: _decorator),
-            _tortyField(controllers: _controllers, decorator: _decorator),
-            //TODO implementar botones para confirmar y cancelar formulario y poner bonito (row)
-          ],
-        ),
-      ]),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                _nameField(controllers: _controllers, decorator: _decorator),
+                _descField(controllers: _controllers, decorator: _decorator),
+                _locationField(controllers: _controllers, decorator: _decorator),
+                _qualityField(controllers: _controllers, decorator: _decorator),
+                _priceField(controllers: _controllers, decorator: _decorator),
+                _tortyField(controllers: _controllers, decorator: _decorator),
+                //TODO implementar botones para confirmar y cancelar formulario y poner bonito (row)
+              ],
+            ),
+          ),
+        ],
+      ),
     );
     ;
   }
@@ -232,9 +246,10 @@ class __tortyFieldState extends State<_tortyField> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text("Puntos Torty",style:TextStyle(color: Colors.black54,fontSize: 16)),
+            Text("Puntos Torty",
+                style: TextStyle(color: Colors.black54, fontSize: 16)),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical:8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: RatingBar.builder(
                 initialRating: 3,
                 minRating: 0.5,
@@ -249,16 +264,15 @@ class __tortyFieldState extends State<_tortyField> {
                 ),
                 onRatingUpdate: (rating) {
                   print(rating);
-                  _currValue=rating;
+                  _currValue = rating;
                 },
               ),
             ),
           ],
         ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
-          border:Border.all(color:Colors.black38)
-        ),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: Colors.black38)),
       ),
     );
   }
