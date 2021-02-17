@@ -23,6 +23,10 @@ class CoolAppBar extends StatelessWidget {
                 height: size.height * 0.25 - 20, //Clave para clipear cosas
                 width: size.width,
                 decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/backgrounds/test.jpg"),
+                    fit: BoxFit.cover
+                  ),
                   color: Colors.amberAccent,
                   gradient: LinearGradient(
                     colors: [Colors.amberAccent, Colors.amber],
@@ -31,6 +35,13 @@ class CoolAppBar extends StatelessWidget {
                     bottomLeft: Radius.circular(60),
                     bottomRight: Radius.circular(60),
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black54,
+                      offset: Offset(1,5),
+                      blurRadius: 10
+                    )
+                  ]
                 ),
                 child: Center(
                   child: Padding(
@@ -160,7 +171,10 @@ class Body extends StatelessWidget {
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
     return Container(
-      decoration: BoxDecoration(color: Colors.amberAccent[50]),
+      decoration: BoxDecoration(image: DecorationImage(
+        image: AssetImage("assets/images/backgrounds/test_2.jpg"),
+        fit: BoxFit.cover,
+      )),
       child: Column(
         children: [
           CoolAppBar(size: size),
