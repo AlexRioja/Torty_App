@@ -72,7 +72,7 @@ class CoolAppBar extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     FloatingActionButton.extended(
-                      heroTag: "btn1",
+                      heroTag: "add_btn",
                       label: Text("Añadir",
                           style: TextStyle(shadows: [
                             BoxShadow(
