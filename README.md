@@ -1,6 +1,6 @@
-# torty_test_1
+# torty_test_1- IN DEVELOPMENT
 
-A new Flutter application.
+Compartir pintxos de tortilla nunca fué tan facil, gracias a esta app!
 
 ## Getting Started
 
