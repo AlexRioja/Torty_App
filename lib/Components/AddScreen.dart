@@ -232,7 +232,7 @@ class __tortyFieldState extends State<_tortyField> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text("Puntos Torty",style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 15)),
+            Text("Puntos Torty",style:TextStyle(color: Colors.black54,fontSize: 16)),
             Padding(
               padding: const EdgeInsets.symmetric(vertical:8.0),
               child: RatingBar.builder(
@@ -257,7 +257,7 @@ class __tortyFieldState extends State<_tortyField> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
-          border:Border.all(color:Colors.white38)
+          border:Border.all(color:Colors.black38)
         ),
       ),
     );

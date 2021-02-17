@@ -16,34 +16,39 @@ class CoolAppBar extends StatelessWidget {
     return Column(
       children: [
         Container(
-          height: size.height * 0.2, //Clave para clipear cosas
+          height: size.height * 0.25, //Clave para clipear cosas
           child: Stack(
             children: [
               Container(
-                height: size.height * 0.2 - 27, //Clave para clipear cosas
+                height: size.height * 0.25 - 20, //Clave para clipear cosas
+                width: size.width,
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  color: Colors.amberAccent,
+                  gradient: LinearGradient(
+                    colors: [Colors.amberAccent, Colors.amber],
+                  ),
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(0),
+                    bottomLeft: Radius.circular(60),
+                    bottomRight: Radius.circular(60),
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        "Bienvenido a Torty!",
-                        //TODO Quitar esta mierda y poner un logo o una animación de Rive
-                        style: Theme.of(context).textTheme.headline4.copyWith(
-                            color: Colors.white, fontWeight: FontWeight.w500),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(
+                      "Bienvenido a Torty!",
+                      //TODO Quitar esta mierda y poner un logo o una animación de Rive
+                      style: Theme.of(context).textTheme.headline4.copyWith(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w500,
+                        shadows: [
+                          BoxShadow(
+                              blurRadius: 12,
+                              color: Colors.black45,
+                              offset: Offset(2, 2))
+                        ],
                       ),
-                      SizedBox(
-                        width: 10,
-                      )
-                    ],
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    ),
                   ),
                 ),
               ),
@@ -60,34 +65,34 @@ class CoolAppBar extends StatelessWidget {
                       label: Text("Añadir",
                           style: TextStyle(shadows: [
                             BoxShadow(
-                                blurRadius: 4,
+                                blurRadius: 8,
                                 color: Colors.black45,
                                 offset: Offset(2, 2))
-                          ], color: Colors.white)),
+                          ], color: Colors.black87)),
                       onPressed: () {
                         Navigator.of(context).pushNamed('/add');
                       },
                       icon: Icon(
                         Icons.add,
-                        color: Colors.white,
+                        color: Colors.black87,
                       ),
-                      backgroundColor: Colors.blueGrey,
+                      backgroundColor: Colors.amberAccent[700],
                     ),
                     FloatingActionButton.extended(
                       heroTag: "btn2",
                       label: Text("Consultar",
                           style: TextStyle(shadows: [
                             BoxShadow(
-                                blurRadius: 4,
+                                blurRadius: 8,
                                 color: Colors.black45,
                                 offset: Offset(2, 2))
-                          ], color: Colors.white)),
+                          ], color: Colors.black87)),
                       onPressed: () {},
                       icon: Icon(
                         Icons.search,
-                        color: Colors.white,
+                        color: Colors.black87,
                       ),
-                      backgroundColor: Colors.blueGrey,
+                      backgroundColor: Colors.amberAccent[700],
                     ),
                   ],
                 ),
@@ -155,7 +160,7 @@ class Body extends StatelessWidget {
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
     return Container(
-      decoration: BoxDecoration(color: Colors.blueGrey[100]),
+      decoration: BoxDecoration(color: Colors.amberAccent[50]),
       child: Column(
         children: [
           CoolAppBar(size: size),

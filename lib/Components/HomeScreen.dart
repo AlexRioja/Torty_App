@@ -12,10 +12,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-        ),
-        drawer: Navegacion(),
-        body: Body(size: size));
+        body: SafeArea(child: Body(size: size)));
   }
 }
