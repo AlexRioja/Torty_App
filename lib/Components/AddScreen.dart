@@ -5,7 +5,7 @@ class AddScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag:"add_btn",
+      tag: "add_btn",
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -54,55 +54,63 @@ class _AddFormState extends State<AddForm> {
     ];
     return Form(
       key: _formKey,
-      child: ListView(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/images/backgrounds/test_2.jpg"),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.linearToSrgbGamma())),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      child: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/images/backgrounds/test_2.jpg"),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.linearToSrgbGamma())),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _nameField(controllers: _controllers, decorator: _decorator),
+                  _locationField(
+                      controllers: _controllers, decorator: _decorator),
+                ],
+              ),
+              _descField(controllers: _controllers, decorator: _decorator),
+              _priceField(controllers: _controllers, decorator: _decorator),
+              _qualityField(controllers: _controllers, decorator: _decorator),
+              _tortyField(controllers: _controllers, decorator: _decorator),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _nameField(controllers: _controllers, decorator: _decorator),
-                    _locationField(
-                        controllers: _controllers, decorator: _decorator),
+                    RaisedButton.icon(
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          // Si el formulario es válido, muestre un snackbar. En el mundo real, a menudo
+                          // desea llamar a un servidor o guardar la información en una base de datos
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(content: Text('Processing Data')));
+                          print("Nombre ${_controllers[0].text}");
+                          print("Torty ${_controllers[4].text}");
+                          //TODO agregar la info a la base de datos
+                        }
+                      },
+                      icon: Icon(Icons.check),
+                      label: Text("Aceptar"),
+                      shape: StadiumBorder(),
+                    ),
+                    RaisedButton.icon(
+                      onPressed: () {},
+                      icon: Icon(Icons.cancel),
+                      label: Text("Cancelar"),
+                      shape: StadiumBorder(),
+                    ),
                   ],
                 ),
-                _descField(controllers: _controllers, decorator: _decorator),
-                _priceField(controllers: _controllers, decorator: _decorator),
-                _qualityField(controllers: _controllers, decorator: _decorator),
-                _tortyField(controllers: _controllers, decorator: _decorator),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      RaisedButton.icon(
-                        onPressed: () {},
-                        icon: Icon(Icons.check),
-                        label: Text("Aceptar"),
-                        shape: StadiumBorder(),
-                      ),
-                      RaisedButton.icon(
-                        onPressed: () {},
-                        icon: Icon(Icons.cancel),
-                        label: Text("Cancelar"),
-                        shape: StadiumBorder(),
-                      ),
-                    ],
-                  ),
-                ),
-                //TODO implementar botones para confirmar y cancelar formulario y poner bonito (row)
-              ],
-            ),
+              ),
+              //TODO implementar botones para confirmar y cancelar formulario y poner bonito (row)
+            ],
           ),
-        ],
+        ),
       ),
     );
     ;
@@ -126,11 +134,16 @@ class _nameField extends StatelessWidget {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(top: 30, left: 15, right: 0, bottom: 3),
-        child: TextField(
+        child: TextFormField(
           controller: _controllers[0],
-          onSubmitted: (String Value) {},
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Introduce el nombre por favor';
+            }
+          },
           decoration: _decorator.copyWith(
-              labelText: "Nombre", prefixIcon: Icon(Icons.drive_file_rename_outline)),
+              labelText: "Nombre",
+              prefixIcon: Icon(Icons.drive_file_rename_outline)),
         ),
       ),
     );
@@ -153,9 +166,13 @@ class _descField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-      child: TextField(
+      child: TextFormField(
         controller: _controllers[1],
-        onSubmitted: (String Value) {},
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'Introduce algo de descripción por favor';
+          }
+        },
         decoration: _decorator.copyWith(
             labelText: "Descripción", prefixIcon: Icon(Icons.description)),
       ),
@@ -203,14 +220,37 @@ class _priceField extends StatelessWidget {
   final List<TextEditingController> _controllers;
   final InputDecoration _decorator;
 
+  bool isNumericUsing_tryParse(String string) {
+    // Null or empty string is not a number
+    if (string == null || string.isEmpty) {
+      return false;
+    }
+
+    // Try to parse input string to number.
+    // Both integer and double work.
+    // Use int.tryParse if you want to check integer only.
+    // Use double.tryParse if you want to check double only.
+    final number = num.tryParse(string);
+
+    if (number == null) {
+      return false;
+    }
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-      child: TextField(
+      child: TextFormField(
         keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: _controllers[4],
-        onSubmitted: (String Value) {},
+        controller: _controllers[3],
+        validator: (value) {
+          if (value.isEmpty || !this.isNumericUsing_tryParse(value)) {
+            return 'Introduce un precio por favor';
+          }
+        },
         decoration: _decorator.copyWith(
             labelText: "Precio", prefixIcon: Icon(Icons.attach_money)),
       ),
@@ -231,19 +271,23 @@ class _tortyField extends StatefulWidget {
   final InputDecoration _decorator;
 
   @override
-  __tortyFieldState createState() => __tortyFieldState();
+  __tortyFieldState createState() => __tortyFieldState(_controllers);
 }
 
 class __tortyFieldState extends State<_tortyField> {
   double _currValue;
+  List<TextEditingController> _controllers;
+  __tortyFieldState(List<TextEditingController> _controllers);
 
   @override
   void initState() {
     // TODO: implement initState
-    _currValue = 3;
+    _currValue = 2.5;
     super.initState();
   }
-
+  double getValue(){
+    return _currValue;
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -259,7 +303,7 @@ class __tortyFieldState extends State<_tortyField> {
               child: RatingBar.builder(
                 itemSize: 37,
                 glowColor: Colors.amber,
-                initialRating: 3,
+                initialRating: 2.5,
                 minRating: 0.5,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
@@ -271,8 +315,8 @@ class __tortyFieldState extends State<_tortyField> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (rating) {
-                  print(rating);
                   _currValue = rating;
+                  //_controllers[4].text=_currValue.toString();
                 },
               ),
             ),
@@ -323,6 +367,13 @@ class __tortyFieldState extends State<_tortyField> {
     );
   }*/
 }
+class CounterFormField extends FormField<double> {
+  CounterFormField({
+
+}):super(
+
+);
+}
 
 class _qualityField extends StatefulWidget {
   const _qualityField({
@@ -346,7 +397,7 @@ class __qualityFieldState extends State<_qualityField> {
   @override
   void initState() {
     // TODO: implement initState
-    _currValue = 3;
+    _currValue = 2.5;
     super.initState();
   }
 
@@ -365,7 +416,7 @@ class __qualityFieldState extends State<_qualityField> {
               child: RatingBar.builder(
                 itemSize: 37,
                 glowColor: Colors.amber,
-                initialRating: 3,
+                initialRating: 2.5,
                 minRating: 0.5,
                 direction: Axis.horizontal,
                 allowHalfRating: true,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import '../Tortilla.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CoolAppBar extends StatelessWidget {
   const CoolAppBar({
@@ -23,26 +24,23 @@ class CoolAppBar extends StatelessWidget {
                 height: size.height * 0.25 - 20, //Clave para clipear cosas
                 width: size.width,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/backgrounds/test.jpg"),
-                    fit: BoxFit.cover
-                  ),
-                  color: Colors.amberAccent,
-                  gradient: LinearGradient(
-                    colors: [Colors.amberAccent, Colors.amber],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(60),
-                    bottomRight: Radius.circular(60),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black54,
-                      offset: Offset(1,5),
-                      blurRadius: 10
-                    )
-                  ]
-                ),
+                    image: DecorationImage(
+                        image: AssetImage("assets/images/backgrounds/test.jpg"),
+                        fit: BoxFit.cover),
+                    color: Colors.amberAccent,
+                    gradient: LinearGradient(
+                      colors: [Colors.amberAccent, Colors.amber],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(60),
+                      bottomRight: Radius.circular(60),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black54,
+                          offset: Offset(1, 5),
+                          blurRadius: 10)
+                    ]),
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
@@ -167,11 +165,16 @@ class Body extends StatelessWidget {
 
   final Size size;
 
+  double cast2double (num input){
+    return input.toDouble();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
     return Container(
-      decoration: BoxDecoration(image: DecorationImage(
+      decoration: BoxDecoration(
+          image: DecorationImage(
         image: AssetImage("assets/images/backgrounds/test_2.jpg"),
         fit: BoxFit.cover,
       )),
@@ -187,18 +190,42 @@ class Body extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 10),
-            child: CarouselSlider(
-              items: [FlipCard_Tortilla(), FlipCard_Tortilla()],
-              options: CarouselOptions(
-                enableInfiniteScroll: false,
-                height: _size.height / 2,
-                viewportFraction: 0.82,
-                autoPlay: true,
-                autoPlayCurve: Curves.fastOutSlowIn,
-                autoPlayInterval: Duration(seconds: 12),
-                autoPlayAnimationDuration: Duration(milliseconds: 1800),
-              ),
-            ),
+            child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection("tortillas")
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  List<DocumentSnapshot> docs = snapshot.data.docs;
+                  List<FlipCard_Tortilla> cards = [];
+                  for (int i = 0; i < docs.length && i<5; i++) {
+                    Map<String, dynamic> info = docs[i].data();
+                    Tortilla t = Tortilla(
+                      name: info['name'],
+                      description: info['desc'],
+                      quality: this.cast2double(info['quality']),
+                      price: this.cast2double(info['price']),
+                      torty_points: this.cast2double(info['torty_points']),
+                    );
+                    cards.add(FlipCard_Tortilla(tortilla: t));
+                  }
+                  return CarouselSlider(//TODO cambiar esto por CarouselSlider.builder
+                    items: cards,
+                    options: CarouselOptions(
+                      enableInfiniteScroll: false,
+                      height: _size.height / 2,
+                      viewportFraction: 0.82,
+                      autoPlay: true,
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      autoPlayInterval: Duration(seconds: 12),
+                      autoPlayAnimationDuration: Duration(milliseconds: 1800),
+                    ),
+                  );
+                }),
           ),
         ],
       ),
