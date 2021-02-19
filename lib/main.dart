@@ -4,13 +4,18 @@ import 'Components/HomeScreen.dart';
 import 'Components/AddScreen.dart';
 import 'Tortilla.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 
-void main() => runApp(Torty_App());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(Torty_App());
+}
 
 class Torty_App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final Future<FirebaseApp> _initialization = Firebase.initializeApp();
     Color main=Colors.amber;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
