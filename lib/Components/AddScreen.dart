@@ -66,10 +66,15 @@ class _AddFormState extends State<AddForm> {
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                _nameField(controllers: _controllers, decorator: _decorator),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _nameField(controllers: _controllers, decorator: _decorator),
+                    _locationField(
+                        controllers: _controllers, decorator: _decorator),
+                  ],
+                ),
                 _descField(controllers: _controllers, decorator: _decorator),
-                _locationField(
-                    controllers: _controllers, decorator: _decorator),
                 _priceField(controllers: _controllers, decorator: _decorator),
                 _qualityField(controllers: _controllers, decorator: _decorator),
                 _tortyField(controllers: _controllers, decorator: _decorator),
@@ -118,12 +123,15 @@ class _nameField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 30, left: 15, right: 15, bottom: 3),
-      child: TextField(
-        controller: _controllers[0],
-        onSubmitted: (String Value) {},
-        decoration: _decorator.copyWith(labelText: "Nombre"),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 30, left: 15, right: 0, bottom: 3),
+        child: TextField(
+          controller: _controllers[0],
+          onSubmitted: (String Value) {},
+          decoration: _decorator.copyWith(
+              labelText: "Nombre", prefixIcon: Icon(Icons.drive_file_rename_outline)),
+        ),
       ),
     );
   }
@@ -148,7 +156,8 @@ class _descField extends StatelessWidget {
       child: TextField(
         controller: _controllers[1],
         onSubmitted: (String Value) {},
-        decoration: _decorator.copyWith(labelText: "Descripcion"),
+        decoration: _decorator.copyWith(
+            labelText: "Descripción", prefixIcon: Icon(Icons.description)),
       ),
     );
   }
@@ -168,13 +177,15 @@ class _locationField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-      child: TextField(
-        controller: _controllers[2],
-        onSubmitted: (String Value) {},
-        decoration: _decorator.copyWith(
-            labelText: "Localización", prefixIcon: Icon(Icons.location_on)),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 30, left: 10, right: 15, bottom: 3),
+        child: TextField(
+          controller: _controllers[2],
+          onSubmitted: (String Value) {},
+          decoration: _decorator.copyWith(
+              labelText: "Localización", prefixIcon: Icon(Icons.location_on)),
+        ),
       ),
     );
   }
