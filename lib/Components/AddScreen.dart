@@ -367,13 +367,6 @@ class __tortyFieldState extends State<_tortyField> {
     );
   }*/
 }
-class CounterFormField extends FormField<double> {
-  CounterFormField({
-
-}):super(
-
-);
-}
 
 class _qualityField extends StatefulWidget {
   const _qualityField({
