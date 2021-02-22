@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:torty_test_1/Components/TestScreen.dart';
+import 'package:torty_test_1/Components/ProfileInfo.dart';
 import 'Components/HomeScreen.dart';
 import 'Components/AddScreen.dart';
 import 'Tortilla.dart';
@@ -26,8 +26,7 @@ class Torty_App extends StatelessWidget {
       routes: {
         '/': (context) => HomeScreen(),
         '/add': (context) => AddScreen(),
-        '/test': (context) => TestScreen(),
-        '/userInfo': (context) => TestScreen(),
+        '/userInfo': (context) => ProfileInfo(),
       },
     );
   }

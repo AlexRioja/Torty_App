@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:slimy_card/slimy_card.dart';
 
-class TestScreen extends StatelessWidget {
+class ProfileInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
