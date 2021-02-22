@@ -3,6 +3,7 @@ import 'package:flip_card/flip_card.dart';
 import '../Tortilla.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:torty_test_1/FirebaseInterface.dart';
 
 class CoolAppBar extends StatelessWidget {
   const CoolAppBar({
@@ -171,6 +172,7 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseInterface f=FirebaseInterface();
     Size _size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
@@ -185,15 +187,13 @@ class Body extends StatelessWidget {
             padding: const EdgeInsets.only(top: 36.0, bottom: 15),
             child: Text(
               "Sus tortillas favoritas!", //TODO ...hacerlo bien...
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headline5,
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 10),
             child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("tortillas")
-                    .snapshots(),
+                stream: f.getFavs(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (!snapshot.hasData) {
                     return Center(

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:torty_test_1/FirebaseInterface.dart';
+import '../Tortilla.dart';
 
 //TODO Clean-up code!!!!
 
-
-class SlidersState with ChangeNotifier{
-  double _q_state=2.5, _t_state=2.5;
+class SlidersState with ChangeNotifier {
+  double _q_state = 2.5, _t_state = 2.5;
 
   double get q_state => _q_state;
 
@@ -47,7 +48,6 @@ class AddScreen extends StatelessWidget {
   }
 }
 
-
 class AddForm extends StatefulWidget {
   @override
   _AddFormState createState() => _AddFormState();
@@ -65,6 +65,7 @@ class _AddFormState extends State<AddForm> {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseInterface f = FirebaseInterface();
     InputDecoration _decorator = InputDecoration(
         border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(25),
@@ -113,12 +114,28 @@ class _AddFormState extends State<AddForm> {
                         if (_formKey.currentState.validate()) {
                           // Si el formulario es válido, muestre un snackbar. En el mundo real, a menudo
                           // desea llamar a un servidor o guardar la información en una base de datos
-                          Scaffold.of(context).showSnackBar(
-                              SnackBar(content: Text('Processing Data')));
-                          print("Nombre ${_controllers[0].text}");
-                          print("Torty ${Provider.of<SlidersState>(context,listen: false).t_state}");
-                          print("Quality ${Provider.of<SlidersState>(context,listen: false).q_state}");
-                          //TODO agregar la info a la base de datos
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                            content: Text('Procesando...'),
+                            behavior: SnackBarBehavior.floating,
+                            shape: StadiumBorder(),
+                            elevation: 10,
+                          ));
+                          f.pushTortilla(Tortilla(
+                            name: _controllers[0].text,
+                            description: _controllers[1].text,
+                            price: double.tryParse(_controllers[3].text),
+                            quality: Provider.of<SlidersState>(context,
+                                    listen: false)
+                                .q_state,
+                            torty_points: Provider.of<SlidersState>(context,
+                                    listen: false)
+                                .t_state,
+                          ));
+                          Future.delayed(const Duration(milliseconds: 2500), () {
+                            setState(() {
+                              Navigator.of(context).pop();
+                            });
+                          });
                         }
                       },
                       icon: Icon(Icons.check),
@@ -346,7 +363,8 @@ class __tortyFieldState extends State<_tortyField> {
                 ),
                 onRatingUpdate: (rating) {
                   _currValue = rating;
-                  Provider.of<SlidersState>(context,listen:false).t_state=_currValue;
+                  Provider.of<SlidersState>(context, listen: false).t_state =
+                      _currValue;
                 },
               ),
             ),
@@ -414,8 +432,8 @@ class __qualityFieldState extends State<_qualityField> {
                 ),
                 onRatingUpdate: (rating) {
                   _currValue = rating;
-                  Provider.of<SlidersState>(context,listen:false).q_state=_currValue;
-
+                  Provider.of<SlidersState>(context, listen: false).q_state =
+                      _currValue;
                 },
               ),
             ),
