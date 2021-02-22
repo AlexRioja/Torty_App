@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:slimy_card/slimy_card.dart';
 
+//TODO show the actual profile of the user && be able to logout
+
 class ProfileInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
