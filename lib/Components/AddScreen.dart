@@ -1,5 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:provider/provider.dart';
+
+//TODO Clean-up code!!!!
+
+
+class SlidersState with ChangeNotifier{
+  double _q_state=2.5, _t_state=2.5;
+
+  double get q_state => _q_state;
+
+  double get t_state => _t_state;
+
+  set q_state(double value) {
+    _q_state = value;
+    notifyListeners();
+  }
+
+  set t_state(value) {
+    _t_state = value;
+    notifyListeners();
+  }
+}
 
 class AddScreen extends StatelessWidget {
   @override
@@ -16,11 +38,15 @@ class AddScreen extends StatelessWidget {
           iconTheme: IconThemeData(color: Colors.black),
           centerTitle: true,
         ),
-        body: AddForm(),
+        body: ChangeNotifierProvider<SlidersState>(
+          create: (_) => SlidersState(),
+          child: AddForm(),
+        ),
       ),
     );
   }
 }
+
 
 class AddForm extends StatefulWidget {
   @override
@@ -90,7 +116,8 @@ class _AddFormState extends State<AddForm> {
                           Scaffold.of(context).showSnackBar(
                               SnackBar(content: Text('Processing Data')));
                           print("Nombre ${_controllers[0].text}");
-                          print("Torty ${_controllers[4].text}");
+                          print("Torty ${Provider.of<SlidersState>(context,listen: false).t_state}");
+                          print("Quality ${Provider.of<SlidersState>(context,listen: false).q_state}");
                           //TODO agregar la info a la base de datos
                         }
                       },
@@ -277,6 +304,7 @@ class _tortyField extends StatefulWidget {
 class __tortyFieldState extends State<_tortyField> {
   double _currValue;
   List<TextEditingController> _controllers;
+
   __tortyFieldState(List<TextEditingController> _controllers);
 
   @override
@@ -285,9 +313,11 @@ class __tortyFieldState extends State<_tortyField> {
     _currValue = 2.5;
     super.initState();
   }
-  double getValue(){
+
+  double getValue() {
     return _currValue;
   }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -316,7 +346,7 @@ class __tortyFieldState extends State<_tortyField> {
                 ),
                 onRatingUpdate: (rating) {
                   _currValue = rating;
-                  _controllers[4].text=_currValue.toString();
+                  Provider.of<SlidersState>(context,listen:false).t_state=_currValue;
                 },
               ),
             ),
@@ -328,44 +358,6 @@ class __tortyFieldState extends State<_tortyField> {
       ),
     );
   }
-/*
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.black38),
-            borderRadius: BorderRadius.all(Radius.circular(20))),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 10,left: 20),
-              child: Align(
-                child: Text(
-                  "Marcador Torty",
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
-                alignment: Alignment.topLeft,
-              ),
-            ),
-            Slider(
-              value: _currValue,
-              min: 0,
-              max: 5,
-              divisions: 5,
-              label: _currValue.round().toString(),
-              onChanged: (double value) {
-                setState(() {
-                  _currValue = value;
-                });
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }*/
 }
 
 class _qualityField extends StatefulWidget {
@@ -421,8 +413,8 @@ class __qualityFieldState extends State<_qualityField> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (rating) {
-                  print(rating);
                   _currValue = rating;
+                  Provider.of<SlidersState>(context,listen:false).q_state=_currValue;
 
                 },
               ),

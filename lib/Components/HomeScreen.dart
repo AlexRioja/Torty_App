@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
       "Calentando el aceite...",
       "Pelando las patatas...",
       "Añadiendo sal...",
-      "La tortilla siempre con cebolla"
+      "La tortilla siempre con cebolla",
       "Pintxo pintxo, pintxo de tortilla...",
       "Ini tirtilli sin cibilli pir fivir..."
     ];
