@@ -316,7 +316,7 @@ class __tortyFieldState extends State<_tortyField> {
                 ),
                 onRatingUpdate: (rating) {
                   _currValue = rating;
-                  //_controllers[4].text=_currValue.toString();
+                  _controllers[4].text=_currValue.toString();
                 },
               ),
             ),
@@ -423,6 +423,7 @@ class __qualityFieldState extends State<_qualityField> {
                 onRatingUpdate: (rating) {
                   print(rating);
                   _currValue = rating;
+
                 },
               ),
             ),

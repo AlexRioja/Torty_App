@@ -71,6 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
       "Pelando las patatas...",
       "Añadiendo sal...",
       "La tortilla siempre con cebolla"
+      "Pintxo pintxo, pintxo de tortilla...",
+      "Ini tirtilli sin cibilli pir fivir..."
     ];
     var rng = new Random();
     return rndm_phrase[rng.nextInt(rndm_phrase.length)];
