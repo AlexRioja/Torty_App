@@ -27,9 +27,11 @@ class Torty_App extends StatelessWidget {
         '/': (context) => HomeScreen(),
         '/add': (context) => AddScreen(),
         '/test': (context) => TestScreen(),
+        '/userInfo': (context) => TestScreen(),
       },
     );
   }
 }
 
 //TODO Echar un ojo a Slimy_card https://pub.dev/packages/slimy_card
+//TODO Echar un ojo a bottom_navy_bar https://pub.dev/packages/bottom_navy_bar. Cambiar por todo la navegación?

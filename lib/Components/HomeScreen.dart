@@ -6,6 +6,8 @@ import 'package:simple_speed_dial/simple_speed_dial.dart';
 import 'CustomWidgets.dart';
 import 'package:splashscreen/splashscreen.dart' as sp;
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     Key key,
@@ -18,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return sp.SplashScreen(
       seconds: 5,
       imageBackground: AssetImage('assets/images/backgrounds/background.png'),
@@ -30,34 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.amberAccent, blurRadius: 50, offset: Offset(10, 10))
         ]),
       ),
-      navigateAfterSeconds: Scaffold(
-        body: SafeArea(child: Body(size: size)),
-        floatingActionButton: SpeedDial(
-          child: Icon(Icons.settings),
-          speedDialChildren: <SpeedDialChild>[
-            SpeedDialChild(
-              child: Icon(Icons.construction),
-              foregroundColor: Colors.black,
-              backgroundColor: Colors.redAccent,
-              label: 'Test',
-              onPressed: () {
-                Navigator.of(context).pushNamed('/test');
-              },
-            ),
-            SpeedDialChild(
-              child: Icon(Icons.construction),
-              foregroundColor: Colors.black,
-              backgroundColor: Colors.redAccent,
-              label: 'Test 2',
-              onPressed: () {
-                Navigator.of(context).pushNamed('/test');
-              },
-            ),
-          ],
-          closedBackgroundColor: Colors.purple,
-          openBackgroundColor: Colors.black,
-        ),
-      ),
+      navigateAfterSeconds: home(),
     );
   }
 
@@ -76,5 +50,32 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
     var rng = new Random();
     return rndm_phrase[rng.nextInt(rndm_phrase.length)];
+  }
+}
+
+class home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      key: _scaffoldKey,
+      body: SafeArea(child: Body(size: size)),
+      floatingActionButton: SpeedDial(
+        child: Icon(Icons.person_sharp),
+        speedDialChildren: <SpeedDialChild>[
+          SpeedDialChild(
+            child: Icon(Icons.person_pin_rounded),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.purpleAccent,
+            label: 'Mi cuenta tortillera',
+            onPressed: () {
+              Navigator.of(context).pushNamed("/userInfo");
+            },
+          ),
+        ],
+        closedBackgroundColor: Colors.purple,
+        openBackgroundColor: Colors.black,
+      ),
+    );
   }
 }
