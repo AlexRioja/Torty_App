@@ -22,7 +22,7 @@ class LogState with ChangeNotifier {
   bool get isLogged => _isLogged;
 
   initLog() async {
-    await _googleSignIn.onCurrentUserChanged
+    _googleSignIn.onCurrentUserChanged
         .listen((GoogleSignInAccount account) {
       _currentUser = account;
       if (_currentUser != null) {
