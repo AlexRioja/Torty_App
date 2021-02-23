@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../main.dart';
 
-//TODO show the actual profile of the user && be able to logout
 
 class ProfileInfo extends StatelessWidget {
   @override

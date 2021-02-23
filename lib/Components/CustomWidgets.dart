@@ -115,50 +115,7 @@ class CoolAppBar extends StatelessWidget {
   }
 }
 
-class Navegacion extends StatelessWidget {
-  //TODO ¿Quitarlo?
-  const Navegacion({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          UserAccountsDrawerHeader(
-            accountEmail: Text("gene.brooks@example.com"),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage("assets/images/profile_example.jpg"),
-            ),
-            accountName: Text("Gene Brooks"),
-            onDetailsPressed: () {
-              //TODO Implementar una pantalla o un alertDialog con más info del perfil
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.add),
-            title: Text("Añadir una súpertortilla!"),
-            onTap: () {
-              Navigator.of(context).pushNamed('/add');
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.dangerous),
-            title: Text("Test Screen"),
-            onTap: () {
-              Navigator.of(context).pushNamed('/test');
-            },
-          )
-        ],
-      ),
-    );
-  }
-}
-
 class Body extends StatelessWidget {
-  //TODO Llamar a una función asíncrona para cargar datos desde red!(firebase)
   const Body({
     Key key,
     @required this.size,

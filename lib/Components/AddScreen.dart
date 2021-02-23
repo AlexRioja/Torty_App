@@ -6,6 +6,7 @@ import '../Tortilla.dart';
 
 //TODO Clean-up code!!!!
 //TODO Implement this https://github.com/AndreHaueisen/flushbar for location sites nearby
+//TODO add user info to know who uploaded the tortilla
 class SlidersState with ChangeNotifier {
   double _q_state = 2.5, _t_state = 2.5;
 
@@ -143,7 +144,9 @@ class _AddFormState extends State<AddForm> {
                       shape: StadiumBorder(),
                     ),
                     RaisedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                       icon: Icon(Icons.cancel),
                       label: Text("Cancelar"),
                       shape: StadiumBorder(),
@@ -151,7 +154,6 @@ class _AddFormState extends State<AddForm> {
                   ],
                 ),
               ),
-              //TODO implementar botones para confirmar y cancelar formulario y poner bonito (row)
             ],
           ),
         ),
@@ -326,7 +328,6 @@ class __tortyFieldState extends State<_tortyField> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _currValue = 2.5;
     super.initState();
   }
@@ -399,7 +400,6 @@ class __qualityFieldState extends State<_qualityField> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _currValue = 2.5;
     super.initState();
   }
