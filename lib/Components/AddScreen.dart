@@ -5,7 +5,7 @@ import 'package:torty_test_1/FirebaseInterface.dart';
 import '../Tortilla.dart';
 
 //TODO Clean-up code!!!!
-
+//TODO Implement this https://github.com/AndreHaueisen/flushbar for location sites nearby
 class SlidersState with ChangeNotifier {
   double _q_state = 2.5, _t_state = 2.5;
 
@@ -445,42 +445,4 @@ class __qualityFieldState extends State<_qualityField> {
       ),
     );
   }
-/*
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.black38),
-            borderRadius: BorderRadius.all(Radius.circular(20))),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 10,left: 20),
-              child: Align(
-                child: Text(
-                  "Marcador Torty",
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
-                alignment: Alignment.topLeft,
-              ),
-            ),
-            Slider(
-              value: _currValue,
-              min: 0,
-              max: 5,
-              divisions: 5,
-              label: _currValue.round().toString(),
-              onChanged: (double value) {
-                setState(() {
-                  _currValue = value;
-                });
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }*/
 }

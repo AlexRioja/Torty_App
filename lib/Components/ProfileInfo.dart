@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:slimy_card/slimy_card.dart';
+import 'package:provider/provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import '../main.dart';
 
 //TODO show the actual profile of the user && be able to logout
 
@@ -9,8 +12,10 @@ class ProfileInfo extends StatelessWidget {
     return Scaffold(
       body: Container(
         child: Profile(),
-        decoration:
-            BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/backgrounds/test_2.jpg"),fit: BoxFit.cover)),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("assets/images/backgrounds/test_2.jpg"),
+                fit: BoxFit.cover)),
       ),
       appBar: AppBar(
         title: Row(
@@ -63,12 +68,14 @@ class _ProfileState extends State<Profile> {
 class Profile_up extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    GoogleSignInAccount account =
+        Provider.of<LogState>(context, listen: false).currentUser;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          height: 70,
-          width: 70,
+          height: 90,
+          width: 90,
           decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -79,16 +86,15 @@ class Profile_up extends StatelessWidget {
                 ),
               ],
               borderRadius: BorderRadius.circular(15),
-              image: DecorationImage(
-                  image: AssetImage("assets/images/profile_example.jpg"))),
+              image: DecorationImage(image: NetworkImage(account.photoUrl))),
         ),
         SizedBox(height: 15),
         Text(
-          'Nombre del usuario',
+          account.displayName,
           style: TextStyle(color: Colors.black, fontSize: 30),
         ),
         Text(
-          'Correo del usuario',
+          account.email,
           style: TextStyle(color: Colors.black54, fontSize: 20),
         ),
       ],
@@ -101,7 +107,14 @@ class Profile_down extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [RaisedButton(onPressed: () {}, child: Icon(Icons.logout))],
+      children: [
+        RaisedButton(
+            onPressed: () {
+              Provider.of<LogState>(context, listen: false).logout();
+              Navigator.of(context).pop();
+            },
+            child: Icon(Icons.logout))
+      ],
     );
   }
 }
