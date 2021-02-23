@@ -39,7 +39,7 @@ class PlaceApiProvider {
 
   final sessionToken;
 
-  static final String androidKey = 'AIzaSyB-ZtCLpanxJjBDUOLNWVo4zrloB32S1k4';
+  static final String androidKey = 'key';
   static final String iosKey = 'YOUR_API_KEY_HERE';
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
