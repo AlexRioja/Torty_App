@@ -6,6 +6,8 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="torty_test_1"
@@ -44,5 +46,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyB-ZtCLpanxJjBDUOLNWVo4zrloB32S1k4"/>
+
     </application>
 </manifest>

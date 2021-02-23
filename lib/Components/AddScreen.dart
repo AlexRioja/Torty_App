@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:torty_test_1/Components/place_service.dart';
 import 'package:torty_test_1/FirebaseInterface.dart';
 import '../Tortilla.dart';
+import 'package:geolocator/geolocator.dart';
+import "package:google_maps_webservice/places.dart";
+import 'package:flutter_google_places/flutter_google_places.dart';
 
 //TODO Clean-up code!!!!
 //TODO Implement this https://github.com/AndreHaueisen/flushbar for location sites nearby
@@ -72,14 +76,6 @@ class _AddFormState extends State<AddForm> {
       borderRadius: BorderRadius.circular(25),
       borderSide: BorderSide(),
     ));
-    List<String> _labels = [
-      'Nombre',
-      'Descripción',
-      'Localización',
-      'Calidad',
-      'Precio',
-      'Marcador Torty'
-    ];
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -97,8 +93,7 @@ class _AddFormState extends State<AddForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _nameField(controllers: _controllers, decorator: _decorator),
-                  _locationField(
-                      controllers: _controllers, decorator: _decorator),
+                  _locationField(_controllers[2]),
                 ],
               ),
               _descField(controllers: _controllers, decorator: _decorator),
@@ -132,7 +127,8 @@ class _AddFormState extends State<AddForm> {
                                     listen: false)
                                 .t_state,
                           ));
-                          Future.delayed(const Duration(milliseconds: 2500), () {
+                          Future.delayed(const Duration(milliseconds: 2500),
+                              () {
                             setState(() {
                               Navigator.of(context).pop();
                             });
@@ -226,31 +222,199 @@ class _descField extends StatelessWidget {
   }
 }
 
-class _locationField extends StatelessWidget {
-  const _locationField({
-    Key key,
-    @required List<TextEditingController> controllers,
-    @required InputDecoration decorator,
-  })  : _controllers = controllers,
-        _decorator = decorator,
-        super(key: key);
+/// Determine the current position of the device.
+///
+/// When the location services are not enabled or permissions
+/// are denied the `Future` will return an error.
+Future<Position> _determinePosition() async {
+  bool serviceEnabled;
+  LocationPermission permission;
 
-  final List<TextEditingController> _controllers;
-  final InputDecoration _decorator;
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return Future.error('Location services are disabled.');
+    await Geolocator.openAppSettings();
+    await Geolocator.openLocationSettings();
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.deniedForever) {
+    return Future.error(
+        'Location permissions are permantly denied, we cannot request permissions.');
+  }
+
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission != LocationPermission.whileInUse &&
+        permission != LocationPermission.always) {
+      return Future.error(
+          'Location permissions are denied (actual value: $permission).');
+    }
+  }
+  try {
+    return await Geolocator.getCurrentPosition(
+        timeLimit: Duration(seconds: 7),
+        desiredAccuracy: LocationAccuracy.high);
+  } catch (e) {
+    return await Geolocator.getLastKnownPosition();
+  }
+}
+
+Future<PlacesSearchResponse> _determinePlaces(Position p) async {
+  final places = GoogleMapsPlaces(
+    apiKey: "AIzaSyB-ZtCLpanxJjBDUOLNWVo4zrloB32S1k4",
+  );
+}
+
+class BottomSheet extends StatefulWidget {
+  TextEditingController _controller;
+  Position _pos;
+
+  BottomSheet(this._controller, this._pos);
+
+  @override
+  _BottomSheetState createState() => _BottomSheetState();
+}
+
+class _BottomSheetState extends State<BottomSheet> {
+  List<Place> suggestions = List<Place>();
+  bool first = true;
+  PlaceApiProvider prov = PlaceApiProvider("");
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 30, left: 10, right: 15, bottom: 3),
-        child: TextField(
-          controller: _controllers[2],
-          onSubmitted: (String Value) {},
-          decoration: _decorator.copyWith(
-              labelText: "Localización", prefixIcon: Icon(Icons.location_on)),
+    return Container(
+      height: MediaQuery.of(context).size.height / 1.2,
+      color: Colors.grey,
+      child: Container(
+        height: MediaQuery.of(context).size.height / 1.2,
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(20),
+            topLeft: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(
+              "Elige el creador de la tortilla...",
+              style: TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            TextFormField(
+              controller: widget._controller,
+              onChanged: (text) async {
+                Position x = widget._pos;
+                prov
+                    .fetchSuggestions(text, "Es", x.longitude.toString(),
+                        x.latitude.toString())
+                    .then((res) {
+                  setState(() {
+                    suggestions = res;
+                  });
+                });
+              },
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(),
+                  ),
+                  hintText: "Empieza a teclear el nombre..."),
+            ),
+            Flexible(
+                fit: FlexFit.tight,
+                child: ListView(
+                  padding: EdgeInsets.all(8),
+                  children: [
+                    for (Place p in suggestions)
+                      ListTile(
+                        onTap: (){
+                          //TODO take the selected and show snackbar in addScreen
+                        },
+                        shape: StadiumBorder(),
+                        tileColor: Colors.amberAccent,
+                        title: Text(p.name),
+                        subtitle: Text(p.formatted_address),
+                        leading: Image(
+                          image: NetworkImage(p.icon),
+                        ),
+                      )
+                  ],
+                )
+                /*child: ListView.builder(
+                  padding: EdgeInsets.all(8),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(suggestions[index].name),
+                      subtitle: Text(suggestions[index].formatted_address),
+                      leading: Image(
+                        image: NetworkImage(suggestions[index].icon),
+                      ),
+                    );
+                  },
+                  itemCount: suggestions.length,
+              ),*/
+                ),
+          ],
         ),
       ),
     );
+  }
+}
+
+_callDetailId(PlaceApiProvider prov, List<Suggestion> list) async {
+  List<Place> places = [];
+  for (Suggestion s in list) {
+    Place p = await prov.getPlaceDetailFromId(s.placeId);
+    places.add(p);
+  }
+  return places;
+}
+
+class _locationField extends StatefulWidget {
+  TextEditingController controller;
+
+  _locationField(this.controller);
+
+  @override
+  __locationFieldState createState() => __locationFieldState(controller);
+}
+
+class __locationFieldState extends State<_locationField> {
+  TextEditingController controller;
+
+  __locationFieldState(this.controller);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.only(top: 30, left: 10, right: 15, bottom: 3),
+        child: OutlineButton.icon(
+          shape: StadiumBorder(),
+          borderSide: BorderSide(color: Colors.black45),
+          padding: EdgeInsets.all(18),
+          icon: Icon(
+            Icons.location_on,
+            color: Colors.black54,
+          ),
+          label: Text("Localización"),
+          onPressed: () {
+            _determinePosition().then((value) {
+              print(value);
+              showModalBottomSheet(
+                  isScrollControlled: true,
+                  elevation: 20,
+                  context: context,
+                  builder: (context) => SingleChildScrollView(
+                      child: BottomSheet(controller, value)));
+            });
+          },
+        ));
   }
 }
 

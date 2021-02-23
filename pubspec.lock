@@ -160,6 +160,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_google_places:
+    dependency: "direct dev"
+    description:
+      name: flutter_google_places
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.6"
   flutter_rating_bar:
     dependency: "direct dev"
     description:
@@ -177,6 +184,27 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  geolocator:
+    dependency: "direct dev"
+    description:
+      name: geolocator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.2.1"
+  geolocator_platform_interface:
+    dependency: transitive
+    description:
+      name: geolocator_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.9"
+  geolocator_web:
+    dependency: transitive
+    description:
+      name: geolocator_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   google_fonts:
     dependency: "direct dev"
     description:
@@ -184,6 +212,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.2"
+  google_maps_webservice:
+    dependency: "direct dev"
+    description:
+      name: google_maps_webservice
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.19"
   google_sign_in:
     dependency: "direct dev"
     description:
@@ -352,6 +387,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.8"
+  rxdart:
+    dependency: transitive
+    description:
+      name: rxdart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.24.1"
   simple_speed_dial:
     dependency: "direct dev"
     description:
@@ -449,5 +491,5 @@ packages:
     source: hosted
     version: "0.1.2"
 sdks:
-  dart: ">=2.10.0-110 <2.11.0"
-  flutter: ">=1.17.0 <2.0.0"
+  dart: ">=2.10.0 <2.11.0"
+  flutter: ">=1.20.0 <2.0.0"
