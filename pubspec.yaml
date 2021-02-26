@@ -47,6 +47,7 @@ dev_dependencies:
   geolocator: ^6.2.1
   google_maps_webservice: ^0.0.19
   flutter_google_places: ^0.2.6
+  url_launcher: ^5.7.10
 
 
 

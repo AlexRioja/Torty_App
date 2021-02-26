@@ -4,6 +4,7 @@ import '../Tortilla.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:torty_test_1/FirebaseInterface.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CoolAppBar extends StatelessWidget {
   const CoolAppBar({
@@ -123,13 +124,13 @@ class Body extends StatelessWidget {
 
   final Size size;
 
-  double cast2double (num input){
+  double cast2double(num input) {
     return input.toDouble();
   }
 
   @override
   Widget build(BuildContext context) {
-    FirebaseInterface f=FirebaseInterface();
+    FirebaseInterface f = FirebaseInterface();
     Size _size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
@@ -159,7 +160,7 @@ class Body extends StatelessWidget {
                   }
                   List<DocumentSnapshot> docs = snapshot.data.docs;
                   List<FlipCard_Tortilla> cards = [];
-                  for (int i = 0; i < docs.length && i<5; i++) {
+                  for (int i = 0; i < docs.length && i < 5; i++) {
                     Map<String, dynamic> info = docs[i].data();
                     Tortilla t = Tortilla(
                       name: info['name'],
@@ -167,10 +168,12 @@ class Body extends StatelessWidget {
                       quality: this.cast2double(info['quality']),
                       price: this.cast2double(info['price']),
                       torty_points: this.cast2double(info['torty_points']),
+                      location: info['location'],
                     );
                     cards.add(FlipCard_Tortilla(tortilla: t));
                   }
-                  return CarouselSlider(//TODO cambiar esto por CarouselSlider.builder
+                  return CarouselSlider(
+                    //TODO cambiar esto por CarouselSlider.builder
                     items: cards,
                     options: CarouselOptions(
                       enableInfiniteScroll: false,
@@ -306,10 +309,11 @@ class FlipCard_Tortilla extends StatelessWidget {
                       FlatButton.icon(
                         textColor: const Color(0xFF6200EE),
                         onPressed: () {
+                          _goToMaps(tortilla.location);
                           //TODO Lanzar Maps para que le lleve a la tortilla
                         },
                         label: const Text('Llévame!'),
-                        icon: Icon(Icons.gps_fixed),
+                        icon: Icon(Icons.location_on),
                       ),
                     ],
                   ),
@@ -320,5 +324,13 @@ class FlipCard_Tortilla extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+_goToMaps(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
 }

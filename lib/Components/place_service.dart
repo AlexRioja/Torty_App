@@ -5,13 +5,14 @@ import 'dart:io';
 import 'package:http/http.dart';
 
 class Place {
-  String name, formatted_address, icon,url;
+  String name, formatted_address, icon,url, id;
 
   Place({
     this.name,
     this.formatted_address,
     this.icon,
     this.url,
+    this.id
   });
 
   @override
@@ -85,6 +86,7 @@ class PlaceApiProvider {
         place.name=result['result']['name'];
         place.icon=result['result']['icon'];
         place.url=result['result']['url'];
+        place.id=placeId;
         return place;
       }
       throw Exception(result['error_message']);
