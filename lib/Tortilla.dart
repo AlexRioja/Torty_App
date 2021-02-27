@@ -11,7 +11,7 @@ class Tortilla_bar {
 }
 
 class Tortilla {
-  String name, description,location;
+  String name, description,location,address, id;
 
 //TODO Variable location, con la información de la localización del bar
   double quality, price, torty_points;
@@ -22,5 +22,8 @@ class Tortilla {
       @required this.quality,
       @required this.price,
       @required this.torty_points,
-      @required this.location});
+      @required this.location,
+      @required this.address,
+      @required this.id,
+      });
 }

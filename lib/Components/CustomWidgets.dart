@@ -117,9 +117,12 @@ class CoolAppBar extends StatelessWidget {
 }
 
 class Body extends StatelessWidget {
+  final FirebaseInterface firebase;
+
   const Body({
     Key key,
     @required this.size,
+    this.firebase,
   }) : super(key: key);
 
   final Size size;
@@ -130,7 +133,6 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseInterface f = FirebaseInterface();
     Size _size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
@@ -148,44 +150,52 @@ class Body extends StatelessWidget {
               style: Theme.of(context).textTheme.headline5,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 10),
-            child: StreamBuilder(
-                stream: f.getFavs(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(),
+          SizedBox(
+            height: 100,
+          ),
+          Expanded(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 35.0, vertical: 10),
+              child: StreamBuilder(
+                  stream: firebase.getFavs(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    List<DocumentSnapshot> docs = snapshot.data.docs;
+                    List<FlipCard_Tortilla> cards = [];
+                    for (int i = 0; i < docs.length && i < 5; i++) {
+                      Map<String, dynamic> info = docs[i].data();
+                      Tortilla t = Tortilla(
+                        name: info['name'],
+                        description: info['desc'],
+                        quality: this.cast2double(info['quality']),
+                        price: this.cast2double(info['price']),
+                        torty_points: this.cast2double(info['torty_points']),
+                        location: info['location'],
+                        address: info['address'],
+                        id: info['id'],
+                      );
+                      cards.add(FlipCard_Tortilla(tortilla: t));
+                    }
+                    return CarouselSlider(
+                      //TODO cambiar esto por CarouselSlider.builder
+                      items: cards,
+                      options: CarouselOptions(
+                        enableInfiniteScroll: false,
+                        height: _size.height / 2.2,
+                        viewportFraction: 0.82,
+                        autoPlay: true,
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        autoPlayInterval: Duration(seconds: 12),
+                        autoPlayAnimationDuration: Duration(milliseconds: 1800),
+                      ),
                     );
-                  }
-                  List<DocumentSnapshot> docs = snapshot.data.docs;
-                  List<FlipCard_Tortilla> cards = [];
-                  for (int i = 0; i < docs.length && i < 5; i++) {
-                    Map<String, dynamic> info = docs[i].data();
-                    Tortilla t = Tortilla(
-                      name: info['name'],
-                      description: info['desc'],
-                      quality: this.cast2double(info['quality']),
-                      price: this.cast2double(info['price']),
-                      torty_points: this.cast2double(info['torty_points']),
-                      location: info['location'],
-                    );
-                    cards.add(FlipCard_Tortilla(tortilla: t));
-                  }
-                  return CarouselSlider(
-                    //TODO cambiar esto por CarouselSlider.builder
-                    items: cards,
-                    options: CarouselOptions(
-                      enableInfiniteScroll: false,
-                      height: _size.height / 2,
-                      viewportFraction: 0.82,
-                      autoPlay: true,
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      autoPlayInterval: Duration(seconds: 12),
-                      autoPlayAnimationDuration: Duration(milliseconds: 1800),
-                    ),
-                  );
-                }),
+                  }),
+            ),
           ),
         ],
       ),
@@ -232,7 +242,10 @@ class FlipCard_Tortilla extends StatelessWidget {
               "Esta tortilla está increible!, De verdad no te la puedes perder",
           price: 3.0,
           quality: 2.5,
-          torty_points: 3.5);
+          torty_points: 3.5,
+          location: "",
+          address: "",
+          id: "");
     }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -243,17 +256,42 @@ class FlipCard_Tortilla extends StatelessWidget {
           front: Container(
             decoration: BoxDecoration(
               color: this.first_color,
+              image: DecorationImage(
+                image: AssetImage("assets/images/tortilladepatatas.jpg"),
+                fit: BoxFit.fitHeight,
+                colorFilter: new ColorFilter.mode(
+                    Colors.white.withOpacity(0.25), BlendMode.dstATop),
+              ),
               borderRadius: _cardBorder_first,
               boxShadow: [_cardShadow],
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(tortilla.name,
-                    style: Theme.of(context).textTheme.headline5),
-                Text('Pincha aquí para saber más!',
-                    style: Theme.of(context).textTheme.bodyText2),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      tortilla.name,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                          wordSpacing: 3),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+
+                  Text(
+                    tortilla.address,
+                    style: Theme.of(context).textTheme.subtitle1,
+                    textAlign: TextAlign.center,
+                  ),SizedBox(
+                    height: 12,
+                  ),
+                  Text('Pincha aquí para saber más!',
+                      style:TextStyle(fontSize: 14,color: Colors.black54)),
+                ],
+              ),
             ),
           ),
           back: Container(
@@ -312,7 +350,7 @@ class FlipCard_Tortilla extends StatelessWidget {
                           _goToMaps(tortilla.location);
                           //TODO Lanzar Maps para que le lleve a la tortilla
                         },
-                        label: const Text('Llévame!'),
+                        label: const Text('Vamos!'),
                         icon: Icon(Icons.location_on),
                       ),
                     ],

@@ -20,6 +20,8 @@ class FirebaseInterface {
       'quality': t.quality,
       'torty_points': t.torty_points,
       'location': t.location,
+      'address':t.address,
+      'id':t.id
     });
   }
 }

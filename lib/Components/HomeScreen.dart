@@ -2,11 +2,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:simple_speed_dial/simple_speed_dial.dart';
+import 'package:torty_test_1/Components/ProfileInfo.dart';
+import '../FirebaseInterface.dart';
 import '../main.dart';
 import 'CustomWidgets.dart';
 import 'package:splashscreen/splashscreen.dart' as sp;
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -60,29 +63,32 @@ class home extends StatefulWidget {
   _homeState createState() => _homeState();
 }
 
-class _homeState extends State<home> {
+class _homeState extends State<home> with TickerProviderStateMixin {
   Artboard _riveArtboard;
   RiveAnimationController _controller;
-
+  int _currentIndex = 0;
+  PageController _pageController;
+  FirebaseInterface f;
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
   @override
   void didChangeDependencies() {
+    Provider.of<LogState>(context, listen: true).initLog();
     super.didChangeDependencies();
-    Provider.of<LogState>(context,listen:true).initLog();
   }
   @override
   void initState() {
     super.initState();
+    f = FirebaseInterface();
+    _pageController = PageController();
     rootBundle.load('assets/rive/torty.riv').then(
       (data) async {
         final file = RiveFile();
-
-        // Load the RiveFile from the binary data.
         if (file.import(data)) {
-          // The artboard is the root of the animation and gets drawn in the
-          // Rive widget.
           final artboard = file.mainArtboard;
-          // Add a controller to play back a known animation on the main/default
-          // artboard.We store a reference to it so we can toggle playback.
           artboard.addController(_controller = SimpleAnimation('Idle'));
           setState(() => _riveArtboard = artboard);
         }
@@ -94,24 +100,65 @@ class _homeState extends State<home> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return Provider.of<LogState>(context,listen:true).isLogged
+    return Provider.of<LogState>(context, listen: true).isLogged
         ? Scaffold(
-            body: SafeArea(child: Body(size: size)),
-            floatingActionButton: SpeedDial(
-              child: Icon(Icons.person_sharp),
-              speedDialChildren: <SpeedDialChild>[
-                SpeedDialChild(
-                  child: Icon(Icons.person_pin_rounded),
-                  foregroundColor: Colors.black,
-                  backgroundColor: Colors.purpleAccent,
-                  label: 'Mi cuenta tortillera',
-                  onPressed: () {
-                    Navigator.of(context).pushNamed("/userInfo");
-                  },
+            //body: SafeArea(child: Body(size: size)),
+            body: SafeArea(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() => _currentIndex = index);
+                },
+                children: <Widget>[
+                  Body(size: size,firebase:f),
+                  Container(
+                    color: Colors.red,
+                  ),
+                  ProfileInfo(),
+                  Container(
+                    color: Colors.blue,
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: BottomNavyBar(
+              selectedIndex: _currentIndex,
+              showElevation: true,
+              backgroundColor: Colors.white,
+              itemCornerRadius: 24,
+              curve: Curves.easeIn,
+              onItemSelected: (index) {
+                setState(() => _currentIndex = index);
+                _pageController.jumpToPage(index);
+              },
+              items: <BottomNavyBarItem>[
+                BottomNavyBarItem(
+                  icon: Icon(Icons.home),
+                  title: Text('Home'),
+                  activeColor: Colors.red,
+                  textAlign: TextAlign.center,
+                ),
+                BottomNavyBarItem(
+                  icon: Icon(Icons.people),
+                  title: Text('Users'),
+                  activeColor: Colors.purpleAccent,
+                  textAlign: TextAlign.center,
+                ),
+                BottomNavyBarItem(
+                  icon: Icon(Icons.person),
+                  title: Text(
+                    'Profile',
+                  ),
+                  activeColor: Colors.pink,
+                  textAlign: TextAlign.center,
+                ),
+                BottomNavyBarItem(
+                  icon: Icon(Icons.settings),
+                  title: Text('Settings'),
+                  activeColor: Colors.blue,
+                  textAlign: TextAlign.center,
                 ),
               ],
-              closedBackgroundColor: Colors.purple,
-              openBackgroundColor: Colors.black,
             ),
           )
         : Scaffold(
@@ -151,7 +198,7 @@ class _homeState extends State<home> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20)),
                         onPressed: () {
-                          Provider.of<LogState>(context,listen:false).login();
+                          Provider.of<LogState>(context, listen: false).login();
                         },
                         shape: StadiumBorder(),
                         color: Colors.red,

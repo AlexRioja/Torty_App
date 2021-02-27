@@ -17,17 +17,10 @@ class ProfileInfo extends StatelessWidget {
                 fit: BoxFit.cover)),
       ),
       appBar: AppBar(
-        title: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 40.0),
-              child: Icon(Icons.person),
-            ),
-            Text(
-              "Perfil de usuario",
-              style: TextStyle(color: Colors.black),
-            ),
-          ],
+        leading: Icon(Icons.person),
+        title: Text(
+          "Perfil de usuario",
+          style: TextStyle(color: Colors.black,wordSpacing: 3),textAlign: TextAlign.center,
         ),
         backgroundColor: Colors.amberAccent,
         iconTheme: IconThemeData(color: Colors.black),
