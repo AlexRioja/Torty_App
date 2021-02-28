@@ -1,29 +1,18 @@
-import 'package:flutter/cupertino.dart';
-
-class Tortilla_bar {
-  String name, description;
-
-  //TODO Variable location, con la información de la localización del bar
-  Tortilla_bar({
-    @required this.name,
-    this.description = '',
-  });
-}
+import 'package:flutter/material.dart';
+import 'package:torty_test_1/Components/place_service.dart';
 
 class Tortilla {
-  String name, description,location,address, id;
-
+  String description,id;
+  Place location;
 //TODO Variable location, con la información de la localización del bar
   double quality, price, torty_points;
 
   Tortilla(
-      {@required this.name,
+      {@required this.location,
       @required this.description,
       @required this.quality,
       @required this.price,
       @required this.torty_points,
-      @required this.location,
-      @required this.address,
       @required this.id,
       });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:torty_test_1/Components/place_service.dart';
 import '../Tortilla.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -169,15 +170,19 @@ class Body extends StatelessWidget {
                     List<FlipCard_Tortilla> cards = [];
                     for (int i = 0; i < docs.length && i < 5; i++) {
                       Map<String, dynamic> info = docs[i].data();
+                      Place place = Place(
+                        id: info['id'],
+                        url: info['location']['url'],
+                        coordinates: info['location']['coordinates'],
+                        formatted_address: info['location']['address'],
+                      name: info['location']['name'],);
                       Tortilla t = Tortilla(
-                        name: info['name'],
+                        id: info['id'],
                         description: info['desc'],
                         quality: this.cast2double(info['quality']),
                         price: this.cast2double(info['price']),
                         torty_points: this.cast2double(info['torty_points']),
-                        location: info['location'],
-                        address: info['address'],
-                        id: info['id'],
+                        location: place,
                       );
                       cards.add(FlipCard_Tortilla(tortilla: t));
                     }
@@ -235,18 +240,7 @@ class FlipCard_Tortilla extends StatelessWidget {
       bottomRight: Radius.circular(20),
       bottomLeft: Radius.circular(20),
     );
-    if (tortilla == null) {
-      tortilla = Tortilla(
-          name: "TestTilla",
-          description:
-              "Esta tortilla está increible!, De verdad no te la puedes perder",
-          price: 3.0,
-          quality: 2.5,
-          torty_points: 3.5,
-          location: "",
-          address: "",
-          id: "");
-    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Container(
@@ -272,7 +266,7 @@ class FlipCard_Tortilla extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      tortilla.name,
+                      tortilla.location.name,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 30,
@@ -280,16 +274,16 @@ class FlipCard_Tortilla extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                   ),
-
                   Text(
-                    tortilla.address,
+                    tortilla.location.formatted_address,
                     style: Theme.of(context).textTheme.subtitle1,
                     textAlign: TextAlign.center,
-                  ),SizedBox(
+                  ),
+                  SizedBox(
                     height: 12,
                   ),
                   Text('Pincha aquí para saber más!',
-                      style:TextStyle(fontSize: 14,color: Colors.black54)),
+                      style: TextStyle(fontSize: 14, color: Colors.black54)),
                 ],
               ),
             ),
@@ -313,11 +307,11 @@ class FlipCard_Tortilla extends StatelessWidget {
                       size: 40,
                     ),
                     title: Text(
-                      tortilla.name,
+                      tortilla.location.name,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
-                      'Torty: ' + tortilla.torty_points.toString(),
+                      'Torty: ' + tortilla.torty_points.toString()+' sobre 5',
                       style: TextStyle(color: Colors.black.withOpacity(0.7)),
                     ),
                   ),
@@ -347,7 +341,7 @@ class FlipCard_Tortilla extends StatelessWidget {
                       FlatButton.icon(
                         textColor: const Color(0xFF6200EE),
                         onPressed: () {
-                          _goToMaps(tortilla.location);
+                          _goToMaps(tortilla.location.url);
                           //TODO Lanzar Maps para que le lleve a la tortilla
                         },
                         label: const Text('Vamos!'),

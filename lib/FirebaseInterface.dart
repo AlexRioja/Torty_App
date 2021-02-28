@@ -14,14 +14,17 @@ class FirebaseInterface {
 
   pushTortilla(Tortilla t) {
     FirebaseFirestore.instance.collection('tortillas').add({
-      'name': t.name,
+      'id': t.location.id,
       'desc': t.description,
       'price': t.price,
       'quality': t.quality,
       'torty_points': t.torty_points,
-      'location': t.location,
-      'address':t.address,
-      'id':t.id
+      'location': {
+        'name': t.location.name,
+        'address': t.location.formatted_address,
+        'url': t.location.url,
+        'coordinates': t.location.coordinates
+      }
     });
   }
 }

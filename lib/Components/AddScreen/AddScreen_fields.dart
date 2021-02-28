@@ -68,7 +68,7 @@ class descField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+      padding: const EdgeInsets.only(top: 0, left: 15, right: 15, bottom: 3),
       child: TextFormField(
         controller: _controllers[1],
         validator: (value) {
@@ -116,18 +116,20 @@ class priceField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-      child: TextFormField(
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: _controllers[3],
-        validator: (value) {
-          if (value.isEmpty || !this.isNumericUsing_tryParse(value)) {
-            return 'Introduce un precio por favor';
-          }
-        },
-        decoration: _decorator.copyWith(
-            labelText: "Precio", prefixIcon: Icon(Icons.attach_money)),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+        child: TextFormField(
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          controller: _controllers[3],
+          validator: (value) {
+            if (value.isEmpty || !this.isNumericUsing_tryParse(value)) {
+              return 'Introduce un precio por favor';
+            }
+          },
+          decoration: _decorator.copyWith(
+              labelText: "Precio", prefixIcon: Icon(Icons.attach_money)),
+        ),
       ),
     );
   }

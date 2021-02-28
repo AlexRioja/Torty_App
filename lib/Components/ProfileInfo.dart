@@ -103,7 +103,7 @@ class Profile_down extends StatelessWidget {
         RaisedButton(
             onPressed: () {
               Provider.of<LogState>(context, listen: false).logout();
-              Navigator.of(context).pop();
+              //Navigator.of(context).pop();
             },
             child: Icon(Icons.logout))
       ],

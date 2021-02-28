@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:torty_test_1/Components/ProfileInfo.dart';
+import 'package:torty_test_1/Components/SecretScreen.dart';
 import 'Components/AddScreen/AddScreen.dart';
 import 'Components/HomeScreen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +23,7 @@ class LogState with ChangeNotifier {
   bool get isLogged => _isLogged;
 
   initLog() async {
-    _googleSignIn.onCurrentUserChanged
-        .listen((GoogleSignInAccount account) {
+    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       _currentUser = account;
       if (_currentUser != null) {
         _isLogged = true;
@@ -64,13 +63,17 @@ class Torty_App extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         //theme: ThemeData(primarySwatch: Colors.lime,fontFamily: "",brightness: Brightness.dark),
-        theme: ThemeData(fontFamily: "Nunito"),
+        theme: ThemeData(
+          fontFamily: "Nunito",
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
         //TODO Big todo, cambiar todo el tema a dark ThemeData.dark() y hacer que todo cuadre o poner color amarillo clarito a todo
         title: 'Torty',
         routes: {
           '/': (context) => HomeScreen(),
           '/add': (context) => AddScreen(),
           '/userInfo': (context) => ProfileInfo(),
+          '/secret':(context)=>SecretScreen()
         },
       ),
     );

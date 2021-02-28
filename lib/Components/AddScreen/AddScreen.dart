@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -5,7 +7,7 @@ import 'package:torty_test_1/Components/place_service.dart';
 import 'package:torty_test_1/FirebaseInterface.dart';
 import 'package:torty_test_1/Tortilla.dart';
 import 'package:geolocator/geolocator.dart';
-import "package:google_maps_webservice/places.dart";
+import 'package:rive/rive.dart';
 import 'AddScreen_fields.dart';
 
 //TODO Clean-up code!!!!
@@ -46,13 +48,41 @@ class AddForm extends StatefulWidget {
 class _AddFormState extends State<AddForm> {
   final _formKey = GlobalKey<FormState>();
   List<TextEditingController> _controllers;
+  RiveAnimationController _controller;
+  Artboard _riveArtboard;
 
   @override
   void initState() {
-    _controllers = [for (int i = 0; i < 6; i++) TextEditingController()];
+    _controllers = [for (int i = 0; i < 7; i++) TextEditingController()];
     super.initState();
+    rootBundle.load('assets/rive/eyes_search.riv').then(
+      (data) async {
+        final file = RiveFile();
+        if (file.import(data)) {
+          final artboard = file.mainArtboard;
+          artboard.addController(_controller = SimpleAnimation('Idle'));
+          setState(() => _riveArtboard = artboard);
+        }
+      },
+    );
   }
-
+  _getRandomPhrase(){
+    List<String> phrases=[
+      "Torty te vigila...",
+      "No te pases de listo...",
+      "Espero que le pongas buena nota...",
+      "¿Qué miras?",
+      "Eres un graciosillo...",
+      "¿No tienes otra cosa que hacer más que tocarme?",
+      "Aquí no hay nada que ver...",
+      "Enhorabuena! Has descubierto un huevo de pascua!",
+      "Glurbrbb Glazorpt zhhh...",
+      "Zzphhzzhzzpzph...",
+      "如果您翻譯此內容，請告訴我我要吃雞蛋了"
+    ];
+    var rng = new Random();
+    return phrases[rng.nextInt(phrases.length)];
+  }
   @override
   Widget build(BuildContext context) {
     FirebaseInterface f = FirebaseInterface();
@@ -74,15 +104,52 @@ class _AddFormState extends State<AddForm> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  var rng = new Random();
+                  Scaffold.of(context).hideCurrentSnackBar();
+                  if(rng.nextInt(20)==1){
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text("Has descubierto un secreto!"),
+                      behavior: SnackBarBehavior.floating,
+                      shape: StadiumBorder(),
+                      elevation: 10,
+                      duration: Duration(seconds: 50),
+                      action: SnackBarAction(
+                        label: "Llévame al secreto",
+                        textColor: Colors.white,
+                        onPressed: () {
+                          Navigator.of(context).pushNamed("/secret");
+                        },
+                      ),
+                    ));
+                  }else{
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(_getRandomPhrase()),
+                      behavior: SnackBarBehavior.floating,
+                      shape: StadiumBorder(),
+                      elevation: 10,
+                    ));
+                  }
+                },
+                child: SizedBox(
+                  child: Container(
+                    margin: EdgeInsets.only(top:15),
+                    height: MediaQuery.of(context).size.height / 3.5,
+                    child: Rive(
+                      artboard: _riveArtboard,
+                    ),
+                  ),
+                ),
+              ),
+              descField(controllers: _controllers, decorator: _decorator),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  nameField(controllers: _controllers, decorator: _decorator),
+                  priceField(controllers: _controllers, decorator: _decorator),
                   _locationField(_controllers),
                 ],
               ),
-              descField(controllers: _controllers, decorator: _decorator),
-              priceField(controllers: _controllers, decorator: _decorator),
               qualityField(controllers: _controllers, decorator: _decorator),
               tortyField(controllers: _controllers, decorator: _decorator),
               Padding(
@@ -102,20 +169,23 @@ class _AddFormState extends State<AddForm> {
                             elevation: 10,
                           ));
                           print(_controllers[2].text);
+                          Place place = Place(
+                              name: _controllers[2].text,
+                              formatted_address: _controllers[4].text,
+                              coordinates: _controllers[5].text,
+                              id: _controllers[0].text,
+                              url: _controllers[6].text);
                           f.pushTortilla(Tortilla(
-                            name: _controllers[0].text,
-                            description: _controllers[1].text,
-                            price: double.tryParse(_controllers[3].text),
-                            quality: Provider.of<SlidersState>(context,
-                                    listen: false)
-                                .q_state,
-                            torty_points: Provider.of<SlidersState>(context,
-                                    listen: false)
-                                .t_state,
-                            location: _controllers[2].text,
-                            address: _controllers[4].text,
-                            id:_controllers[5].text,
-                          ));
+                              description: _controllers[1].text,
+                              price: double.tryParse(_controllers[3].text),
+                              quality: Provider.of<SlidersState>(context,
+                                      listen: false)
+                                  .q_state,
+                              torty_points: Provider.of<SlidersState>(context,
+                                      listen: false)
+                                  .t_state,
+                              location: place,
+                              id: place.id));
                           Future.delayed(const Duration(milliseconds: 2500),
                               () {
                             setState(() {
@@ -160,7 +230,6 @@ Future<Position> _determinePosition() async {
   if (!serviceEnabled) {
     await Geolocator.openLocationSettings();
     return Future.error('Location services are disabled.');
-
   }
 
   permission = await Geolocator.checkPermission();
@@ -256,8 +325,7 @@ class _BottomSheetState extends State<BottomSheet> {
                         onTap: () {
                           //TODO take the selected and show snackbar in addScreen
                           print("Ha seleccionado ${p.name}");
-                          List<String> res = [p.name, p.url,p.formatted_address,p.id];
-                          Navigator.pop(context, res);
+                          Navigator.pop(context, p);
                         },
                         shape: StadiumBorder(),
                         isThreeLine: true,
@@ -293,7 +361,7 @@ class __locationFieldState extends State<_locationField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(top: 30, left: 10, right: 15, bottom: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
         child: OutlineButton.icon(
           shape: StadiumBorder(),
           borderSide: BorderSide(color: Colors.black45),
@@ -313,12 +381,16 @@ class __locationFieldState extends State<_locationField> {
                   context: context,
                   builder: (context) => SingleChildScrollView(
                       child: BottomSheet(controllers[2], value))).then((value) {
-                controllers[2].value = TextEditingValue(text: value[1]);
-                controllers[4].value = TextEditingValue(text: value[2]);
-                controllers[5].value = TextEditingValue(text: value[3]);
+                controllers[2].value = TextEditingValue(text: value.name);
+                controllers[0].value = TextEditingValue(text: value.id);
+                controllers[6].value = TextEditingValue(text: value.url);
+                controllers[4].value =
+                    TextEditingValue(text: value.formatted_address);
+                controllers[5].value =
+                    TextEditingValue(text: value.coordinates);
 
                 return Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text("Has seleccionado: ${value[0]}"),
+                  content: Text("Has seleccionado: ${value.name}"),
                   behavior: SnackBarBehavior.floating,
                   shape: StadiumBorder(),
                   elevation: 10,

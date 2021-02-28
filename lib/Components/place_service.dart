@@ -5,14 +5,15 @@ import 'dart:io';
 import 'package:http/http.dart';
 
 class Place {
-  String name, formatted_address, icon,url, id;
+  String name, formatted_address, icon,url, id, coordinates;
 
   Place({
     this.name,
     this.formatted_address,
     this.icon,
     this.url,
-    this.id
+    this.id,
+    this.coordinates
   });
 
   @override
@@ -74,7 +75,7 @@ class PlaceApiProvider {
 
   Future<Place> getPlaceDetailFromId(String placeId) async {
     final request =
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=name,formatted_address,icon,url&key=$apiKey&sessiontoken=$sessionToken';
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=name,formatted_address,icon,url,geometry&key=$apiKey&sessiontoken=$sessionToken';
     final response = await client.get(request);
 
     if (response.statusCode == 200) {
@@ -86,6 +87,7 @@ class PlaceApiProvider {
         place.name=result['result']['name'];
         place.icon=result['result']['icon'];
         place.url=result['result']['url'];
+        place.coordinates=result['result']['geometry']['location']['lat'].toString()+';'+result['result']['geometry']['location']['lng'].toString();
         place.id=placeId;
         return place;
       }
