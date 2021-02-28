@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:simple_speed_dial/simple_speed_dial.dart';
 import 'package:torty_test_1/Components/ProfileInfo.dart';
+import 'package:torty_test_1/Components/SettingsScreen.dart';
 import '../FirebaseInterface.dart';
 import '../main.dart';
 import 'CustomWidgets.dart';
@@ -69,16 +70,19 @@ class _homeState extends State<home> with TickerProviderStateMixin {
   int _currentIndex = 0;
   PageController _pageController;
   FirebaseInterface f;
+
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
+
   @override
   void didChangeDependencies() {
     Provider.of<LogState>(context, listen: true).initLog();
     super.didChangeDependencies();
   }
+
   @override
   void initState() {
     super.initState();
@@ -110,14 +114,12 @@ class _homeState extends State<home> with TickerProviderStateMixin {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
-                  Body(size: size,firebase:f),
+                  Body(size: size, firebase: f),
                   Container(
                     color: Colors.red,
                   ),
                   ProfileInfo(),
-                  Container(
-                    color: Colors.blue,
-                  ),
+                  SettingsScreen(),
                 ],
               ),
             ),

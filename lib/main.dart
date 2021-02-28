@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:torty_test_1/Components/ProfileInfo.dart';
 import 'package:torty_test_1/Components/SecretScreen.dart';
+import 'package:torty_test_1/Components/SettingsScreen.dart';
 import 'Components/AddScreen/AddScreen.dart';
 import 'Components/HomeScreen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -73,6 +74,7 @@ class Torty_App extends StatelessWidget {
           '/': (context) => HomeScreen(),
           '/add': (context) => AddScreen(),
           '/userInfo': (context) => ProfileInfo(),
+          '/settings':(context)=>SettingsScreen(),
           '/secret':(context)=>SecretScreen()
         },
       ),
