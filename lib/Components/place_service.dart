@@ -59,8 +59,8 @@ class PlaceApiProvider {
             .toList();
         List<Place> places= List<Place>();
         for (Suggestion s in l_sug){
-         Place p=await getPlaceDetailFromId(s.placeId);
-         places.add(p);
+          Place p=await getPlaceDetailFromId(s.placeId);
+          places.add(p);
         }
         return places;
       }

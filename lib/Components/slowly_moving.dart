@@ -42,7 +42,7 @@ class _SlowlyMovingWidgetsFieldState extends State<SlowlyMovingWidgetsField> {
   Container back = Container(
     decoration: BoxDecoration(
         image: DecorationImage(
-            image: AssetImage('assets/images/backgrounds/test_2.jpg'),
+            image: AssetImage('assets/images/backgrounds/background_home.jpg'),
             fit: BoxFit.cover)),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,

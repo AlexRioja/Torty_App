@@ -1,12 +1,14 @@
-import 'package:torty_test_1/Tortilla.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'Tortilla.dart';
+
 class FirebaseInterface {
-  getFavs() {
+  getFavs(String email) {
     return FirebaseFirestore.instance
         .collection("tortillas")
         .orderBy("torty_points", descending: true)
         .limit(5)
+        .where('users', arrayContains: email)
         .snapshots();
   }
 
@@ -24,7 +26,8 @@ class FirebaseInterface {
         'address': t.location.formatted_address,
         'url': t.location.url,
         'coordinates': t.location.coordinates
-      }
+      },
+      'users': [t.user.email]
     });
   }
 }

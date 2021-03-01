@@ -1,14 +1,16 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:torty_test_1/Components/AddScreen_fields.dart';
+import 'package:torty_test_1/Components/FirebaseInterface.dart';
+import 'package:torty_test_1/Components/Tortilla.dart';
 import 'package:torty_test_1/Components/place_service.dart';
-import 'package:torty_test_1/FirebaseInterface.dart';
-import 'package:torty_test_1/Tortilla.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rive/rive.dart';
-import 'AddScreen_fields.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+import '../main.dart';
 
 //TODO Clean-up code!!!!
 //TODO Implement this https://github.com/AndreHaueisen/flushbar for location sites nearby
@@ -87,6 +89,8 @@ class _AddFormState extends State<AddForm> {
 
   @override
   Widget build(BuildContext context) {
+    GoogleSignInAccount account =
+        Provider.of<LogState>(context, listen: false).currentUser;
     FirebaseInterface f = FirebaseInterface();
     InputDecoration _decorator = InputDecoration(
         border: OutlineInputBorder(
@@ -100,7 +104,8 @@ class _AddFormState extends State<AddForm> {
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage("assets/images/backgrounds/test_2.jpg"),
+                  image: AssetImage(
+                      "assets/images/backgrounds/background_home.jpg"),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.linearToSrgbGamma())),
           child: Column(
@@ -178,6 +183,10 @@ class _AddFormState extends State<AddForm> {
                               shape: StadiumBorder(),
                               elevation: 10,
                             ));
+
+                            User user = User(
+                                name: account.displayName,
+                                email: account.email);
                             print(_controllers[2].text);
                             Place place = Place(
                                 name: _controllers[2].text,
@@ -195,7 +204,8 @@ class _AddFormState extends State<AddForm> {
                                         listen: false)
                                     .t_state,
                                 location: place,
-                                id: place.id));
+                                id: place.id,
+                                user: user));
                             Future.delayed(const Duration(milliseconds: 1500),
                                 () {
                               setState(() {

@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/services.dart';
-import 'package:torty_test_1/Components/place_service.dart';
-import '../Tortilla.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:torty_test_1/FirebaseInterface.dart';
+import 'package:torty_test_1/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:rive/rive.dart' as rive;
+import 'FirebaseInterface.dart';
+import 'Tortilla.dart';
+import 'place_service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+
+
 
 class RiveAnim extends StatefulWidget {
   @override
@@ -17,11 +22,12 @@ class RiveAnim extends StatefulWidget {
 class _RiveAnimState extends State<RiveAnim> {
   rive.Artboard _riveArtboard;
   rive.RiveAnimationController _controller;
+
   void _loadRiveFile() async {
     final bytes = await rootBundle.load("assets/rive/crack_egg.riv");
     final file = rive.RiveFile();
     file.import(bytes);
-    _riveArtboard=file.mainArtboard;
+    _riveArtboard = file.mainArtboard;
     _idle();
   }
 
@@ -30,43 +36,55 @@ class _RiveAnimState extends State<RiveAnim> {
     _loadRiveFile();
     super.initState();
   }
+
   void _crack() {
-    _riveArtboard.addController(_controller=rive.SimpleAnimation('Breaking'));
+    _riveArtboard.addController(_controller = rive.SimpleAnimation('Breaking'));
   }
-  void _idle(){
+
+  void _idle() {
     _riveArtboard.addController(rive.SimpleAnimation('Idle'));
   }
+
   @override
   Widget build(BuildContext context) {
     return _riveArtboard != null
-        ? Container(
-            height: 70,
-            width: MediaQuery.of(context).size.width/2.5,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.amberAccent,
-              boxShadow: [BoxShadow(color: Colors.black54,blurRadius: 5,offset: Offset(0,4))]
-            ),
-            child: Hero(
-              tag: "add_btn",
+        ? Hero(
+            tag: "add_btn",
+            child: Container(
+              height: 60,
+              width: MediaQuery.of(context).size.width / 2.5,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.amberAccent,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black54,
+                        blurRadius: 5,
+                        offset: Offset(0, 4))
+                  ]),
               child: FlatButton(
-                onPressed: (){
+                onPressed: () {
                   setState(() {
+                    Future.delayed(const Duration(milliseconds: 950), () {
+                      setState(() {
+                        _idle();
+                        Navigator.of(context).pushNamed('/add');
+                      });
+                    });
                     _crack();
-                    Future.delayed(const Duration(milliseconds: 1000),
-                            () {
-                          setState(() {
-                            _idle();
-                            Navigator.of(context).pushNamed('/add');
-                          });
-                        });
                   });
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.add,),
-                    Text("Añadir",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                    Icon(
+                      Icons.add,
+                    ),
+                    Text(
+                      "Añadir",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                     Expanded(
                       child: rive.Rive(
                         artboard: _riveArtboard,
@@ -102,7 +120,7 @@ class CoolAppBar extends StatelessWidget {
           child: Stack(
             children: [
               Container(
-                height: size.height * 0.25 - 20, //Clave para clipear cosas
+                height: size.height * 0.25 - 30, //Clave para clipear cosas
                 width: size.width,
                 decoration: BoxDecoration(
                     image: DecorationImage(
@@ -193,11 +211,13 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GoogleSignInAccount account =
+        Provider.of<LogState>(context, listen: false).currentUser;
     Size _size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-        image: AssetImage("assets/images/backgrounds/test_2.jpg"),
+        image: AssetImage("assets/images/backgrounds/background_home.jpg"),
         fit: BoxFit.cover,
       )),
       child: Column(
@@ -218,7 +238,7 @@ class Body extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 35.0, vertical: 10),
               child: StreamBuilder(
-                  stream: firebase.getFavs(),
+                  stream: firebase.getFavs(account.email),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (!snapshot.hasData) {
                       return Center(

@@ -1,11 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:torty_test_1/Components/ProfileInfo.dart';
-import 'package:torty_test_1/Components/SettingsScreen.dart';
-import '../FirebaseInterface.dart';
+import 'package:torty_test_1/Components/CustomWidgets.dart';
+import 'package:torty_test_1/Components/FirebaseInterface.dart';
+import 'package:torty_test_1/Screens/ProfileInfo.dart';
+import 'package:torty_test_1/Screens/SearchScreen.dart';
+import 'package:torty_test_1/Screens/SettingsScreen.dart';
 import '../main.dart';
-import 'CustomWidgets.dart';
 import 'package:splashscreen/splashscreen.dart' as sp;
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
@@ -27,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return sp.SplashScreen(
       seconds: 5,
-      imageBackground: AssetImage('assets/images/backgrounds/background.png'),
+      imageBackground: AssetImage('assets/images/backgrounds/background_login.png'),
       loadingText: Text(_getRandomPhrase()),
       title: Text(
         "Torty",
@@ -114,9 +115,7 @@ class _homeState extends State<home> with TickerProviderStateMixin {
                 },
                 children: <Widget>[
                   Body(size: size, firebase: f),
-                  Container(
-                    color: Colors.red,
-                  ),
+                  SearchScreen(),
                   ProfileInfo(),
                   SettingsScreen(),
                 ],
@@ -135,27 +134,27 @@ class _homeState extends State<home> with TickerProviderStateMixin {
               items: <BottomNavyBarItem>[
                 BottomNavyBarItem(
                   icon: Icon(Icons.home),
-                  title: Text('Home'),
+                  title: Text('Casita'),
                   activeColor: Colors.red,
                   textAlign: TextAlign.center,
                 ),
                 BottomNavyBarItem(
                   icon: Icon(Icons.people),
-                  title: Text('Users'),
+                  title: Text('Búsqueda'),
                   activeColor: Colors.purpleAccent,
                   textAlign: TextAlign.center,
                 ),
                 BottomNavyBarItem(
                   icon: Icon(Icons.person),
                   title: Text(
-                    'Profile',
+                    'Perfil',
                   ),
                   activeColor: Colors.pink,
                   textAlign: TextAlign.center,
                 ),
                 BottomNavyBarItem(
                   icon: Icon(Icons.settings),
-                  title: Text('Settings'),
+                  title: Text('Ajustes'),
                   activeColor: Colors.blue,
                   textAlign: TextAlign.center,
                 ),
@@ -170,7 +169,7 @@ class _homeState extends State<home> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage(
-                          "assets/images/backgrounds/background.png"),
+                          "assets/images/backgrounds/background_login.png"),
                       fit: BoxFit.cover)),
               child: Center(
                 child: ListView(children: [

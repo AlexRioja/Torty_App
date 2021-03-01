@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:torty_test_1/Components/slowly_moving.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:torty_test_1/slowly_moving.dart';
 
 final r = new Random();
 
@@ -240,7 +240,7 @@ class _SecretScreenState extends State<SecretScreen> {
         child: SlowlyMovingWidgetsField(
           list: list,
           bd: BoxDecoration(image:DecorationImage(
-              image: AssetImage('assets/images/backgrounds/test_2.jpg'),
+              image: AssetImage('assets/images/backgrounds/background_home.jpg'),
               fit: BoxFit.cover)),
         ),
       ),

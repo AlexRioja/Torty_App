@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:torty_test_1/Components/ProfileInfo.dart';
-import 'package:torty_test_1/Components/SecretScreen.dart';
-import 'package:torty_test_1/Components/SettingsScreen.dart';
-import 'Components/AddScreen/AddScreen.dart';
-import 'Components/HomeScreen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'Screens/AddScreen.dart';
+import 'Screens/HomeScreen.dart';
+import 'Screens/ProfileInfo.dart';
+import 'Screens/SecretScreen.dart';
+import 'Screens/SettingsScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,8 +74,8 @@ class Torty_App extends StatelessWidget {
           '/': (context) => HomeScreen(),
           '/add': (context) => AddScreen(),
           '/userInfo': (context) => ProfileInfo(),
-          '/settings':(context)=>SettingsScreen(),
-          '/secret':(context)=>SecretScreen()
+          '/settings': (context) => SettingsScreen(),
+          '/secret': (context) => SecretScreen()
         },
       ),
     );
