@@ -12,6 +12,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../main.dart';
 
+
 //TODO Clean-up code!!!!
 //TODO Implement this https://github.com/AndreHaueisen/flushbar for location sites nearby
 //TODO add user info to know who uploaded the tortilla
@@ -104,8 +105,7 @@ class _AddFormState extends State<AddForm> {
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(
-                      "assets/images/backgrounds/background_home.jpg"),
+                  image: AssetImage("assets/images/backgrounds/background_home.jpg"),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.linearToSrgbGamma())),
           child: Column(
@@ -183,10 +183,6 @@ class _AddFormState extends State<AddForm> {
                               shape: StadiumBorder(),
                               elevation: 10,
                             ));
-
-                            User user = User(
-                                name: account.displayName,
-                                email: account.email);
                             print(_controllers[2].text);
                             Place place = Place(
                                 name: _controllers[2].text,
@@ -194,6 +190,7 @@ class _AddFormState extends State<AddForm> {
                                 coordinates: _controllers[5].text,
                                 id: _controllers[0].text,
                                 url: _controllers[6].text);
+                              User user=User(email: account.email,name: account.displayName);
                             f.pushTortilla(Tortilla(
                                 description: _controllers[1].text,
                                 price: double.tryParse(_controllers[3].text),
@@ -205,7 +202,7 @@ class _AddFormState extends State<AddForm> {
                                     .t_state,
                                 location: place,
                                 id: place.id,
-                                user: user));
+                            user: user));
                             Future.delayed(const Duration(milliseconds: 1500),
                                 () {
                               setState(() {

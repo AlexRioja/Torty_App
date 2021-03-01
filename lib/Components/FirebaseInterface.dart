@@ -15,7 +15,7 @@ class FirebaseInterface {
   getTortillas() {}
 
   pushTortilla(Tortilla t) {
-    FirebaseFirestore.instance.collection('tortillas').add({
+    FirebaseFirestore.instance.collection('tortillas').doc(t.location.id).set({
       'id': t.location.id,
       'desc': t.description,
       'price': t.price,
@@ -29,5 +29,12 @@ class FirebaseInterface {
       },
       'users': [t.user.email]
     });
+  }
+
+  update(double price, double torty, double quality, String id) {
+    FirebaseFirestore.instance
+        .collection('tortillas')
+        .doc(id)
+        .update({'price': price, 'quality': quality, 'torty_points': torty});
   }
 }

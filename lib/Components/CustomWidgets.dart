@@ -3,15 +3,16 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/services.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:torty_test_1/Components/ModifyBottomSheet.dart';
 import 'package:torty_test_1/main.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:rive/rive.dart' as rive;
 import 'FirebaseInterface.dart';
 import 'Tortilla.dart';
 import 'place_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:rive/rive.dart' as rive;
 
 
 class RiveAnim extends StatefulWidget {
@@ -226,12 +227,9 @@ class Body extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 36.0, bottom: 15),
             child: Text(
-              "Sus tortillas favoritas!", //TODO ...hacerlo bien...
+              "Tus mejores tortillas", //TODO ...hacerlo bien...
               style: Theme.of(context).textTheme.headline5,
             ),
-          ),
-          SizedBox(
-            height: 100,
           ),
           Expanded(
             child: Padding(
@@ -287,6 +285,7 @@ class Body extends StatelessWidget {
     );
   }
 }
+
 
 class FlipCard_Tortilla extends StatelessWidget {
   final Color first_color, second_color;
@@ -381,27 +380,72 @@ class FlipCard_Tortilla extends StatelessWidget {
               elevation: 0,
               child: Column(
                 children: [
-                  ListTile(
-                    leading: Icon(
-                      Icons.local_dining,
-                      size: 40,
-                    ),
-                    title: Text(
-                      tortilla.location.name,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Torty: ' + tortilla.torty_points.toString() + ' sobre 5',
-                      style: TextStyle(color: Colors.black.withOpacity(0.7)),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.local_dining,
+                        size: 40,
+                      ),
+                      title: Text(
+                        tortilla.location.name,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Row(
+                        children: [
+                          Text("Torty:  "),
+                          RatingBarIndicator(
+                            rating: tortilla.torty_points,
+                            itemBuilder: (context, index) => Icon(
+                              Icons.star,
+                              color: Colors.amber[600],
+                            ),
+                            itemCount: 5,
+                            itemSize: 18.0,
+                            direction: Axis.horizontal,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Expanded(
                     child: Padding(
                       padding:
-                          const EdgeInsets.only(top: 12, left: 16, right: 16),
-                      child: Text(
-                        tortilla.description,
-                        style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                          const EdgeInsets.only(top: 12, left: 22, right: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Precio: ${tortilla.price} €",
+                            style:
+                                TextStyle(color: Colors.black.withOpacity(0.6)),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                "Calidad: ",
+                                style: TextStyle(
+                                    color: Colors.black.withOpacity(0.6)),
+                              ),
+                              RatingBarIndicator(
+                                rating: tortilla.quality,
+                                itemBuilder: (context, index) => Icon(
+                                  Icons.star,
+                                  color: Colors.amber[600],
+                                ),
+                                itemCount: 5,
+                                itemSize: 16.0,
+                                direction: Axis.horizontal,
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "Descripción: ${tortilla.description}",
+                            style:
+                                TextStyle(color: Colors.black.withOpacity(0.6)),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -414,18 +458,32 @@ class FlipCard_Tortilla extends StatelessWidget {
                         textColor: const Color(0xFF6200EE),
                         onPressed: () {
                           //TODO añadir puntuación a la tortilla
+                          showModalBottomSheet(
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            elevation: 20,
+                            context: context,
+                            builder: (context) => SingleChildScrollView(
+                              child: ModifyBottomSheet(id:tortilla.id),
+                            ),
+                          );
                         },
-                        label: const Text('Puntuar'),
-                        icon: Icon(Icons.star),
+                        label: const Text('Cambiar'),
+                        icon: Icon(
+                          Icons.update_rounded,
+                          size: 24,
+                        ),
                       ),
                       FlatButton.icon(
                         textColor: const Color(0xFF6200EE),
                         onPressed: () {
                           _goToMaps(tortilla.location.url);
-                          //TODO Lanzar Maps para que le lleve a la tortilla
                         },
                         label: const Text('Vamos!'),
-                        icon: Icon(Icons.location_on),
+                        icon: Icon(
+                          Icons.location_on,
+                          size: 24,
+                        ),
                       ),
                     ],
                   ),

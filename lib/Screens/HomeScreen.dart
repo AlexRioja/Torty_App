@@ -194,7 +194,7 @@ class _homeState extends State<home> with TickerProviderStateMixin {
                       ),
                       SizedBox(height: 20),
                       OutlineButton(
-                        child: Text("Login with Google",
+                        child: Text("Loggeate con Google",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20)),
                         onPressed: () {
