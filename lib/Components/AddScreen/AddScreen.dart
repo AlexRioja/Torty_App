@@ -66,8 +66,9 @@ class _AddFormState extends State<AddForm> {
       },
     );
   }
-  _getRandomPhrase(){
-    List<String> phrases=[
+
+  _getRandomPhrase() {
+    List<String> phrases = [
       "Torty te vigila...",
       "No te pases de listo...",
       "Espero que le pongas buena nota...",
@@ -83,6 +84,7 @@ class _AddFormState extends State<AddForm> {
     var rng = new Random();
     return phrases[rng.nextInt(phrases.length)];
   }
+
   @override
   Widget build(BuildContext context) {
     FirebaseInterface f = FirebaseInterface();
@@ -108,7 +110,7 @@ class _AddFormState extends State<AddForm> {
                 onPressed: () {
                   var rng = new Random();
                   Scaffold.of(context).hideCurrentSnackBar();
-                  if(rng.nextInt(20)==1){
+                  if (rng.nextInt(20) == 1) {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text("Has descubierto un secreto!"),
                       behavior: SnackBarBehavior.floating,
@@ -123,7 +125,7 @@ class _AddFormState extends State<AddForm> {
                         },
                       ),
                     ));
-                  }else{
+                  } else {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text(_getRandomPhrase()),
                       behavior: SnackBarBehavior.floating,
@@ -134,7 +136,7 @@ class _AddFormState extends State<AddForm> {
                 },
                 child: SizedBox(
                   child: Container(
-                    margin: EdgeInsets.only(top:15),
+                    margin: EdgeInsets.only(top: 15),
                     height: MediaQuery.of(context).size.height / 3.5,
                     child: Rive(
                       artboard: _riveArtboard,
@@ -160,38 +162,47 @@ class _AddFormState extends State<AddForm> {
                     RaisedButton.icon(
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
-                          // Si el formulario es válido, muestre un snackbar. En el mundo real, a menudo
-                          // desea llamar a un servidor o guardar la información en una base de datos
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text('Procesando...'),
-                            behavior: SnackBarBehavior.floating,
-                            shape: StadiumBorder(),
-                            elevation: 10,
-                          ));
-                          print(_controllers[2].text);
-                          Place place = Place(
-                              name: _controllers[2].text,
-                              formatted_address: _controllers[4].text,
-                              coordinates: _controllers[5].text,
-                              id: _controllers[0].text,
-                              url: _controllers[6].text);
-                          f.pushTortilla(Tortilla(
-                              description: _controllers[1].text,
-                              price: double.tryParse(_controllers[3].text),
-                              quality: Provider.of<SlidersState>(context,
-                                      listen: false)
-                                  .q_state,
-                              torty_points: Provider.of<SlidersState>(context,
-                                      listen: false)
-                                  .t_state,
-                              location: place,
-                              id: place.id));
-                          Future.delayed(const Duration(milliseconds: 2500),
-                              () {
-                            setState(() {
-                              Navigator.of(context).pop();
+                          if (_controllers[2].text.isEmpty) {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  'Por favor, introduce una localización.'),
+                              behavior: SnackBarBehavior.floating,
+                              shape: StadiumBorder(),
+                              elevation: 10,
+                            ));
+                          } else {
+                            Scaffold.of(context).hideCurrentSnackBar();
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('Procesando...'),
+                              behavior: SnackBarBehavior.floating,
+                              shape: StadiumBorder(),
+                              elevation: 10,
+                            ));
+                            print(_controllers[2].text);
+                            Place place = Place(
+                                name: _controllers[2].text,
+                                formatted_address: _controllers[4].text,
+                                coordinates: _controllers[5].text,
+                                id: _controllers[0].text,
+                                url: _controllers[6].text);
+                            f.pushTortilla(Tortilla(
+                                description: _controllers[1].text,
+                                price: double.tryParse(_controllers[3].text),
+                                quality: Provider.of<SlidersState>(context,
+                                        listen: false)
+                                    .q_state,
+                                torty_points: Provider.of<SlidersState>(context,
+                                        listen: false)
+                                    .t_state,
+                                location: place,
+                                id: place.id));
+                            Future.delayed(const Duration(milliseconds: 1500),
+                                () {
+                              setState(() {
+                                Navigator.of(context).pop();
+                              });
                             });
-                          });
+                          }
                         }
                       },
                       icon: Icon(Icons.check),

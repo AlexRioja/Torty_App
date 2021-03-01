@@ -118,7 +118,7 @@ class priceField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+        padding: const EdgeInsets.only(left: 15, top: 3,bottom:3),
         child: TextFormField(
           keyboardType: TextInputType.numberWithOptions(decimal: true),
           controller: _controllers[3],

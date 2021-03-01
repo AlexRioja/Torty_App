@@ -1,11 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:flutter/services.dart';
 import 'package:torty_test_1/Components/place_service.dart';
 import '../Tortilla.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:torty_test_1/FirebaseInterface.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:rive/rive.dart' as rive;
+
+class RiveAnim extends StatefulWidget {
+  @override
+  _RiveAnimState createState() => _RiveAnimState();
+}
+
+class _RiveAnimState extends State<RiveAnim> {
+  rive.Artboard _riveArtboard;
+  rive.RiveAnimationController _controller;
+  void _loadRiveFile() async {
+    final bytes = await rootBundle.load("assets/rive/crack_egg.riv");
+    final file = rive.RiveFile();
+    file.import(bytes);
+    _riveArtboard=file.mainArtboard;
+    _idle();
+  }
+
+  @override
+  void initState() {
+    _loadRiveFile();
+    super.initState();
+  }
+  void _crack() {
+    _riveArtboard.addController(_controller=rive.SimpleAnimation('Breaking'));
+  }
+  void _idle(){
+    _riveArtboard.addController(rive.SimpleAnimation('Idle'));
+  }
+  @override
+  Widget build(BuildContext context) {
+    return _riveArtboard != null
+        ? Container(
+            height: 70,
+            width: MediaQuery.of(context).size.width/2.5,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.amberAccent,
+              boxShadow: [BoxShadow(color: Colors.black54,blurRadius: 5,offset: Offset(0,4))]
+            ),
+            child: Hero(
+              tag: "add_btn",
+              child: FlatButton(
+                onPressed: (){
+                  setState(() {
+                    _crack();
+                    Future.delayed(const Duration(milliseconds: 1000),
+                            () {
+                          setState(() {
+                            _idle();
+                            Navigator.of(context).pushNamed('/add');
+                          });
+                        });
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(Icons.add,),
+                    Text("Añadir",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                    Expanded(
+                      child: rive.Rive(
+                        artboard: _riveArtboard,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        : Container(
+            color: Colors.blue,
+            height: 70,
+          );
+  }
+}
 
 class CoolAppBar extends StatelessWidget {
   const CoolAppBar({
@@ -67,47 +145,28 @@ class CoolAppBar extends StatelessWidget {
               Positioned(
                 //Clave para clipear cosas
                 bottom: 0,
-                left: 0,
-                right: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    FloatingActionButton.extended(
-                      heroTag: "add_btn",
-                      label: Text("Añadir",
-                          style: TextStyle(shadows: [
-                            BoxShadow(
-                                blurRadius: 8,
-                                color: Colors.black45,
-                                offset: Offset(2, 2))
-                          ], color: Colors.black87)),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/add');
-                      },
-                      icon: Icon(
-                        Icons.add,
-                        color: Colors.black87,
-                      ),
-                      backgroundColor: Colors.amberAccent[700],
-                    ),
-                    FloatingActionButton.extended(
-                      heroTag: "btn2",
-                      label: Text("Consultar",
-                          style: TextStyle(shadows: [
-                            BoxShadow(
-                                blurRadius: 8,
-                                color: Colors.black45,
-                                offset: Offset(2, 2))
-                          ], color: Colors.black87)),
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.black87,
-                      ),
-                      backgroundColor: Colors.amberAccent[700],
-                    ),
-                  ],
-                ),
+                width: size.width / 2.5,
+                right: size.width / 3.5,
+                child: RiveAnim(),
+                /*child: FloatingActionButton.extended(
+                  heroTag: "add_btn",
+                  label: Text("Añadir",
+                      style: TextStyle(shadows: [
+                        BoxShadow(
+                            blurRadius: 8,
+                            color: Colors.black45,
+                            offset: Offset(2, 2))
+                      ], color: Colors.black87,fontSize: 16)),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/add');
+                  },
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.black87,
+                  ),
+                  backgroundColor: Colors.amberAccent[700],
+                  tooltip: "Vamonos a añadir esa tortilla!",
+                ),*/
               ),
             ],
           ),
@@ -175,7 +234,8 @@ class Body extends StatelessWidget {
                         url: info['location']['url'],
                         coordinates: info['location']['coordinates'],
                         formatted_address: info['location']['address'],
-                      name: info['location']['name'],);
+                        name: info['location']['name'],
+                      );
                       Tortilla t = Tortilla(
                         id: info['id'],
                         description: info['desc'],
@@ -311,7 +371,7 @@ class FlipCard_Tortilla extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
-                      'Torty: ' + tortilla.torty_points.toString()+' sobre 5',
+                      'Torty: ' + tortilla.torty_points.toString() + ' sobre 5',
                       style: TextStyle(color: Colors.black.withOpacity(0.7)),
                     ),
                   ),

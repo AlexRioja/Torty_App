@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:simple_speed_dial/simple_speed_dial.dart';
 import 'package:torty_test_1/Components/ProfileInfo.dart';
 import 'package:torty_test_1/Components/SettingsScreen.dart';
 import '../FirebaseInterface.dart';
