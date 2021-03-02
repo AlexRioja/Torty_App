@@ -22,16 +22,26 @@ class SettingsScreen extends StatelessWidget {
                     "assets/images/backgrounds/background_search_2.png"),
                 fit: BoxFit.cover)),
         child: Center(
-          child: FlatButton(
-            onPressed: () {
-              showLicensePage(
-                context: context,
-                // applicationIcon: Image.asset(name)
-                // applicationName: "App Name"
-                // Other parameters
-              );
-            },
-            child: Text('Show Licenses'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+
+              FlatButton(
+                onPressed: () {
+                  showAboutDialog(
+                      context: context,
+                      applicationName: "Torty",
+                      applicationIcon: Icon(Icons.local_pizza),
+                      applicationVersion: "0.0.1",
+                      applicationLegalese:
+                          "Alejandro Martínez de Ternero Ruiz.",
+                      children: <Widget>[
+                        Text("Con todo el cariño del mundo hacia vosotros :)"),
+                      ]);
+                },
+                child: Text('Sobre la aplicación'),
+              ),
+            ],
           ),
         ),
       ),
