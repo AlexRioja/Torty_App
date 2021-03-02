@@ -13,7 +13,7 @@ class ProfileInfo extends StatelessWidget {
         child: Profile(),
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("assets/images/backgrounds/background_home.jpg"),
+                image: AssetImage("assets/images/backgrounds/background_search.png"),
                 fit: BoxFit.cover)),
       ),
       appBar: AppBar(

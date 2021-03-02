@@ -76,7 +76,8 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
           height: MediaQuery.of(context).size.height / 1.2,
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.amber[50],
+            color: Colors.amberAccent[100],
+            image: DecorationImage(image: AssetImage("assets/images/backgrounds/background_home.jpg"),fit: BoxFit.cover),
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50), topRight: Radius.circular(50)),
           ),

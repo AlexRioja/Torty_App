@@ -23,7 +23,7 @@ class SearchScreen extends StatelessWidget {
           decoration: BoxDecoration(
               image: DecorationImage(
             image:
-                AssetImage("assets/images/backgrounds/background_search.png"),
+                AssetImage("assets/images/backgrounds/background_search_2.png"),
             fit: BoxFit.cover,
           )),
           child: test(),

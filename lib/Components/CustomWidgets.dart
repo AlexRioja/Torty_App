@@ -143,20 +143,13 @@ class CoolAppBar extends StatelessWidget {
                     ]),
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      "Bienvenido a Torty!",
-                      //TODO Quitar esta mierda y poner un logo o una animación de Rive
-                      style: Theme.of(context).textTheme.headline4.copyWith(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w500,
-                        shadows: [
-                          BoxShadow(
-                              blurRadius: 12,
-                              color: Colors.black45,
-                              offset: Offset(2, 2))
-                        ],
-                      ),
+                    padding: const EdgeInsets.only(bottom:25.0),
+                    child:  Text(
+                      "Torty",
+                      style: TextStyle(fontFamily: 'Lobster', fontSize: 80, shadows: [
+                        BoxShadow(
+                            color: Colors.amberAccent[700], blurRadius: 50, offset: Offset(10, 10))
+                      ]),
                     ),
                   ),
                 ),
@@ -218,7 +211,7 @@ class Body extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-        image: AssetImage("assets/images/backgrounds/background_home.jpg"),
+        image: AssetImage("assets/images/backgrounds/background_search.png"),
         fit: BoxFit.cover,
       )),
       child: Column(
@@ -351,6 +344,8 @@ class FlipCard_Tortilla extends StatelessWidget {
                           fontSize: 30,
                           wordSpacing: 3),
                       textAlign: TextAlign.center,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Text(
@@ -390,6 +385,8 @@ class FlipCard_Tortilla extends StatelessWidget {
                       title: Text(
                         tortilla.location.name,
                         style: TextStyle(fontWeight: FontWeight.bold),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Row(
                         children: [
@@ -444,6 +441,8 @@ class FlipCard_Tortilla extends StatelessWidget {
                             "Descripción: ${tortilla.description}",
                             style:
                                 TextStyle(color: Colors.black.withOpacity(0.6)),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),

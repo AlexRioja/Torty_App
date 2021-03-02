@@ -12,7 +12,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../main.dart';
 
-
 //TODO Clean-up code!!!!
 //TODO Implement this https://github.com/AndreHaueisen/flushbar for location sites nearby
 //TODO add user info to know who uploaded the tortilla
@@ -79,10 +78,14 @@ class _AddFormState extends State<AddForm> {
       "Eres un graciosillo...",
       "¿No tienes otra cosa que hacer más que tocarme?",
       "Aquí no hay nada que ver...",
-      "Enhorabuena! Has descubierto un huevo de pascua!",
       "Glurbrbb Glazorpt zhhh...",
       "Zzphhzzhzzpzph...",
-      "如果您翻譯此內容，請告訴我我要吃雞蛋了"
+      "如果您翻譯此內容，請告訴我我要吃雞蛋了",
+      ".............................Tortilla............................",
+      "Vosotros los humanos....",
+      "¿Es verdad que los humanos descendeis de los monos?",
+      "Molo un huevo...",
+      "Espejito espejito, ¿Quién será el monstruo de tres ojos más bonito?",
     ];
     var rng = new Random();
     return phrases[rng.nextInt(phrases.length)];
@@ -105,7 +108,8 @@ class _AddFormState extends State<AddForm> {
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage("assets/images/backgrounds/background_home.jpg"),
+                  image: AssetImage(
+                      "assets/images/backgrounds/background_home.jpg"),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.linearToSrgbGamma())),
           child: Column(
@@ -115,7 +119,7 @@ class _AddFormState extends State<AddForm> {
                 onPressed: () {
                   var rng = new Random();
                   Scaffold.of(context).hideCurrentSnackBar();
-                  if (rng.nextInt(20) == 1) {
+                  if (rng.nextInt(30) == 1) {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text("Has descubierto un secreto!"),
                       behavior: SnackBarBehavior.floating,
@@ -132,7 +136,10 @@ class _AddFormState extends State<AddForm> {
                     ));
                   } else {
                     Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(_getRandomPhrase()),
+                      content: Text(
+                        _getRandomPhrase(),
+                        textAlign: TextAlign.center,
+                      ),
                       behavior: SnackBarBehavior.floating,
                       shape: StadiumBorder(),
                       elevation: 10,
@@ -190,7 +197,9 @@ class _AddFormState extends State<AddForm> {
                                 coordinates: _controllers[5].text,
                                 id: _controllers[0].text,
                                 url: _controllers[6].text);
-                              User user=User(email: account.email,name: account.displayName);
+                            User user = User(
+                                email: account.email,
+                                name: account.displayName);
                             f.pushTortilla(Tortilla(
                                 description: _controllers[1].text,
                                 price: double.tryParse(_controllers[3].text),
@@ -202,7 +211,7 @@ class _AddFormState extends State<AddForm> {
                                     .t_state,
                                 location: place,
                                 id: place.id,
-                            user: user));
+                                user: user));
                             Future.delayed(const Duration(milliseconds: 1500),
                                 () {
                               setState(() {
