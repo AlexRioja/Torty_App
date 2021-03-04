@@ -463,7 +463,7 @@ class FlipCard_Tortilla extends StatelessWidget {
                             elevation: 20,
                             context: context,
                             builder: (context) => SingleChildScrollView(
-                              child: ModifyBottomSheet(id:tortilla.id),
+                              child: ModifyBottomSheet(id:tortilla.id,t_p: tortilla.torty_points,q_p: tortilla.quality,p: tortilla.price,),
                             ),
                           );
                         },

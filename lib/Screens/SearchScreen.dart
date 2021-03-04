@@ -1,12 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
-import 'package:flappy_search_bar/flappy_search_bar.dart';
+import 'package:torty_test_1/Components/FirebaseInterface.dart';
+import 'package:provider/provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:torty_test_1/Components/ModifyBottomSheet.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../main.dart';
 
 class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    GoogleSignInAccount account =
+        Provider.of<LogState>(context, listen: false).currentUser;
     return Scaffold(
         appBar: AppBar(
+          actions: [
+            Padding(
+                padding: EdgeInsets.only(right: 10.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.info_outline,
+                    size: 26.0,
+                  ),
+                  onPressed: () {
+                    showDialog<void>(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return AlertDialog(
+                          backgroundColor: Colors.amberAccent[100],
+                          title: Text(
+                            'Pantalla de Búsqueda',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          content: Text('Aquí encontrarás todas tus tortillas. '
+                              'Puedes filtrar los resultados por el nombre de la '
+                              'ciudad, de la calle o del restaurante!\n'
+                              'Desliza los items hacia izquierda y derecha para ver las opciones.'),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Cerrar'),
+                              onPressed: () {
+                                Navigator.of(dialogContext)
+                                    .pop(); // Dismiss alert dialog
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  tooltip: "Información acerca de esta pantalla",
+                ))
+          ],
           leading: Icon(Icons.search),
           title: Text(
             "Búsqueda",
@@ -26,17 +72,69 @@ class SearchScreen extends StatelessWidget {
                 AssetImage("assets/images/backgrounds/background_search_2.png"),
             fit: BoxFit.cover,
           )),
-          child: test(),
+          child: Search_body(email: account.email),
         ));
+    //child: test_2(email: account.email)));
   }
 }
 
 class Search_body extends StatefulWidget {
+  String email;
+
+  Search_body({this.email});
+
   @override
   _Search_bodyState createState() => _Search_bodyState();
 }
 
 class _Search_bodyState extends State<Search_body> {
+  FirebaseInterface f = FirebaseInterface();
+  List _allResults = [];
+  List _filteredResults = [];
+  TextEditingController _controller;
+
+  @override
+  void initState() {
+    _controller = TextEditingController();
+    f.getAllTortillas(widget.email).then((value) {
+      _allResults = value;
+      _filterList();
+    });
+    _controller.addListener(_onSearchChanged);
+    super.initState();
+  }
+
+  _onSearchChanged() {
+    print(_controller.text);
+    _filterList();
+  }
+
+  _filterList() {
+    var showResults = [];
+    if (_controller.text != "") {
+      for (var t in _allResults) {
+        String name = t['location']['name'].toLowerCase();
+        String address = t['location']['address'].toLowerCase();
+        if (name.contains(_controller.text.toLowerCase()) ||
+            address.contains(_controller.text.toLowerCase())) {
+          showResults.add(t);
+        }
+      }
+    } else {
+      showResults = List.from(_allResults);
+    }
+    setState(() {
+      _filteredResults = showResults;
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onSearchChanged);
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -49,50 +147,111 @@ class _Search_bodyState extends State<Search_body> {
             width: MediaQuery.of(context).size.width / 1.05,
             helpText: "Busca sin miedo...",
             closeSearchOnSuffixTap: true,
-            onSuffixTap: () {},
+            onSuffixTap: () {
+              _controller.clear();
+            },
+            textController: _controller,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
+          child: Text(
+            "Desliza los items hacia izquierda y derecha para ver las opciones.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         Expanded(
-          child: ListView(
-            children: [Text("asdasdasdas")],
-          ),
-        )
+            child: ListView.builder(
+          itemBuilder: (context, index) {
+            return SlidableTile(data: _filteredResults, index: index);
+          },
+          itemCount: _filteredResults.length,
+        ))
       ],
     );
   }
 }
 
-class Post {
-  final String title;
-  final String description;
+class SlidableTile extends StatelessWidget {
+  List data = [];
+  int index;
 
-  Post(this.title, this.description);
-}
-
-class test extends StatelessWidget {
-  Future<List<Post>> search(String search) async {
-    await Future.delayed(Duration(seconds: 2));
-    return List.generate(search.length, (int index) {
-      return Post(
-        "Title : $search $index",
-        "Description :$search $index",
-      );
-    });
-  }
+  SlidableTile({this.data, this.index});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: SearchBar<Post>(
-        onSearch: search,
-        onItemFound: (Post post, int index) {
-          return ListTile(
-            title: Text(post.title),
-            subtitle: Text(post.description),
-          );
-        },
+    return Slidable(
+      child: ListTile(
+        title: Text(data[index]["location"]["name"]),
+        subtitle: Text(data[index]["location"]["address"]),
+        onTap: () {},
+        leading: Icon(Icons.restaurant),
+        isThreeLine: true,
       ),
+      actionPane: SlidableDrawerActionPane(),
+      actions: <Widget>[
+        IconSlideAction(
+          caption: 'Llévame',
+          color: Colors.blue,
+          icon: Icons.location_on,
+          onTap: () {
+            _goToMaps(data[index]['location']['url']);
+          },
+        ),
+      ],
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: 'Modificar',
+          color: Colors.black45,
+          icon: Icons.update,
+          onTap: () => {
+            //TODO añadir puntuación a la tortilla
+            showModalBottomSheet(
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              elevation: 20,
+              context: context,
+              builder: (context) => SingleChildScrollView(
+                child: ModifyBottomSheet(
+                  id: data[index]['id'],
+                  p: data[index]['price'],
+                  q_p: data[index]['quality'],
+                  t_p: data[index]['torty_points'],
+                ),
+              ),
+            )
+          },
+        ),
+        IconSlideAction(
+          caption: 'Borrar',
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: () {
+            FirebaseInterface f = FirebaseInterface();
+            f.delete(data[index]['id']);
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text(
+                'Borrado. La lista se actualizará al volver a esta pantalla...',
+                textAlign: TextAlign.center,
+              ),
+              behavior: SnackBarBehavior.floating,
+              shape: StadiumBorder(),
+              elevation: 10,
+            ));
+          },
+        ),
+      ],
     );
+  }
+}
+
+_goToMaps(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
 }

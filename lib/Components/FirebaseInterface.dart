@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'Tortilla.dart';
 
 class FirebaseInterface {
-  getFavs(String email) {
+
+  ///Get 5 best tortillas for current user
+   getFavs(String email) {
     return FirebaseFirestore.instance
         .collection("tortillas")
         .orderBy("torty_points", descending: true)
@@ -11,10 +12,17 @@ class FirebaseInterface {
         .where('users', arrayContains: email)
         .snapshots();
   }
+  ///Get All tortillas for the user
+  Future<List<QueryDocumentSnapshot>> getAllTortillas(String email) async{
+    var data=await FirebaseFirestore.instance
+        .collection("tortillas")
+        .orderBy("torty_points", descending: true)
+        .where('users', arrayContains: email)
+        .get();
+    return data.docs;
+  }
 
-  getTortillas() {}
-
-  pushTortilla(Tortilla t) {
+  pushTortilla(Tortilla t) async{
     FirebaseFirestore.instance.collection('tortillas').doc(t.location.id).set({
       'id': t.location.id,
       'desc': t.description,
@@ -29,6 +37,9 @@ class FirebaseInterface {
       },
       'users': [t.user.email]
     });
+  }
+  delete(String id) async {
+    FirebaseFirestore.instance.collection('tortillas').doc(id).delete();
   }
 
   update(double price, double torty, double quality, String id) {

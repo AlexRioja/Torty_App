@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:provider/provider.dart';
-
 import 'FirebaseInterface.dart';
 
 class SlidersState with ChangeNotifier {
@@ -26,12 +24,17 @@ class SlidersState with ChangeNotifier {
 
 class ModifyBottomSheet extends StatefulWidget {
   String id;
-  ModifyBottomSheet({this.id});
+  double t_p, q_p, p;
+
+  ModifyBottomSheet({this.id, this.q_p, this.t_p, this.p});
+
   @override
   _ModifyBottomSheetState createState() => _ModifyBottomSheetState();
 }
+
 double torty;
 double quality;
+
 class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
   List<TextEditingController> _controllers;
   InputDecoration _decorator;
@@ -41,7 +44,7 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
 
   @override
   void initState() {
-    quality=torty=2.5;
+    quality = torty = 2.5;
     _decorator = InputDecoration(
         border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(25),
@@ -77,7 +80,10 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.amberAccent[100],
-            image: DecorationImage(image: AssetImage("assets/images/backgrounds/background_home.jpg"),fit: BoxFit.cover),
+            image: DecorationImage(
+                image:
+                    AssetImage("assets/images/backgrounds/background_home.jpg"),
+                fit: BoxFit.cover),
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50), topRight: Radius.circular(50)),
           ),
@@ -102,20 +108,35 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
                 priceField(
                   controller: _controllers[0],
                   decorator: _decorator,
+                  p: widget.p,
                 ),
-                tortyField(value:torty),
-                qualityField(),
-                RaisedButton.icon(
-                  onPressed: () {
-                    if (_formKey.currentState.validate()) {
-                      FirebaseInterface f = FirebaseInterface();
-                      f.update(double.tryParse(_controllers[0].text),torty, quality, widget.id);
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  icon: Icon(Icons.check),
-                  label: Text("Aceptar"),
-                  shape: StadiumBorder(),
+                tortyField(value: widget.t_p),
+                qualityField(value: widget.q_p),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    RaisedButton.icon(
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          FirebaseInterface f = FirebaseInterface();
+                          f.update(double.tryParse(_controllers[0].text), torty,
+                              quality, widget.id);
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      icon: Icon(Icons.check),
+                      label: Text("Aceptar"),
+                      shape: StadiumBorder(),
+                    ),
+                    RaisedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: Icon(Icons.cancel_outlined),
+                      label: Text("Cancelar"),
+                      shape: StadiumBorder(),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -125,16 +146,19 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
 }
 
 class priceField extends StatelessWidget {
-  const priceField({
-    Key key,
-    @required TextEditingController controller,
-    @required InputDecoration decorator,
-  })  : _controller = controller,
+  const priceField(
+      {Key key,
+      @required TextEditingController controller,
+      @required InputDecoration decorator,
+      @required double p})
+      : _controller = controller,
         _decorator = decorator,
+        _p = p,
         super(key: key);
 
   final TextEditingController _controller;
   final InputDecoration _decorator;
+  final double _p;
 
   bool _isNumericUsing_tryParse(String string) {
     if (string == null || string.isEmpty) {
@@ -162,7 +186,8 @@ class priceField extends StatelessWidget {
           }
         },
         decoration: _decorator.copyWith(
-            labelText: "Precio", prefixIcon: Icon(Icons.attach_money)),
+            labelText: "Anterior precio: $_p",
+            prefixIcon: Icon(Icons.attach_money)),
       ),
     );
   }
@@ -170,7 +195,9 @@ class priceField extends StatelessWidget {
 
 class tortyField extends StatefulWidget {
   double value;
+
   tortyField({this.value});
+
   @override
   _tortyFieldState createState() => _tortyFieldState();
 }
@@ -180,7 +207,7 @@ class _tortyFieldState extends State<tortyField> {
 
   @override
   void initState() {
-    _currValue = 2.5;
+    _currValue = widget.value;
     super.initState();
   }
 
@@ -203,7 +230,7 @@ class _tortyFieldState extends State<tortyField> {
               child: RatingBar.builder(
                 itemSize: 37,
                 glowColor: Colors.amber,
-                initialRating: 2.5,
+                initialRating: _currValue,
                 minRating: 0.5,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
@@ -217,7 +244,7 @@ class _tortyFieldState extends State<tortyField> {
                 onRatingUpdate: (rating) {
                   _currValue = rating;
                   setState(() {
-                    torty=_currValue;
+                    torty = _currValue;
                   });
                 },
               ),
@@ -233,6 +260,9 @@ class _tortyFieldState extends State<tortyField> {
 }
 
 class qualityField extends StatefulWidget {
+  double value;
+
+  qualityField({this.value});
 
   @override
   _qualityFieldState createState() => _qualityFieldState();
@@ -243,7 +273,7 @@ class _qualityFieldState extends State<qualityField> {
 
   @override
   void initState() {
-    _currValue = 2.5;
+    _currValue = widget.value;
     super.initState();
   }
 
@@ -262,7 +292,7 @@ class _qualityFieldState extends State<qualityField> {
               child: RatingBar.builder(
                 itemSize: 37,
                 glowColor: Colors.amber,
-                initialRating: 2.5,
+                initialRating: _currValue,
                 minRating: 0.5,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
@@ -276,7 +306,7 @@ class _qualityFieldState extends State<qualityField> {
                 onRatingUpdate: (rating) {
                   _currValue = rating;
                   setState(() {
-                    quality=_currValue;
+                    quality = _currValue;
                   });
                 },
               ),

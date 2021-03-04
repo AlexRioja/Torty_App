@@ -67,6 +67,7 @@ class Torty_App extends StatelessWidget {
         theme: ThemeData(
           fontFamily: "Nunito",
           visualDensity: VisualDensity.adaptivePlatformDensity,
+          primarySwatch: Colors.purple
         ),
         //TODO Big todo, cambiar todo el tema a dark ThemeData.dark() y hacer que todo cuadre o poner color amarillo clarito a todo
         title: 'Torty',
