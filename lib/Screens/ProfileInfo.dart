@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../main.dart';
 
-
 class ProfileInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -13,14 +12,16 @@ class ProfileInfo extends StatelessWidget {
         child: Profile(),
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("assets/images/backgrounds/background_search.png"),
+                image: AssetImage(
+                    "assets/images/backgrounds/background_search.png"),
                 fit: BoxFit.cover)),
       ),
       appBar: AppBar(
         leading: Icon(Icons.person),
         title: Text(
           "Perfil de usuario",
-          style: TextStyle(color: Colors.black,wordSpacing: 3),textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.black, wordSpacing: 3),
+          textAlign: TextAlign.center,
         ),
         backgroundColor: Colors.amberAccent,
         iconTheme: IconThemeData(color: Colors.black),

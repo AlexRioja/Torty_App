@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import '../main.dart';
 import 'FirebaseInterface.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 
 class SlidersState with ChangeNotifier {
-  double _q_state = 2.5, _t_state = 2.5;
+  double _q_state = 2.5, _t_state = 2.5, _amount_state = 2.5;
 
   double get q_state => _q_state;
 
@@ -20,19 +23,27 @@ class SlidersState with ChangeNotifier {
     _t_state = value;
     notifyListeners();
   }
+
+  get amount_state => _amount_state;
+
+  set amount_state(value) {
+    _amount_state = value;
+  }
 }
 
 class ModifyBottomSheet extends StatefulWidget {
-  String id;
-  double t_p, q_p, p;
+  String id, name;
+  double t_p, q_p, p, amount;
 
-  ModifyBottomSheet({this.id, this.q_p, this.t_p, this.p});
+  ModifyBottomSheet(
+      {this.id, this.q_p, this.t_p, this.p, this.name, this.amount});
 
   @override
   _ModifyBottomSheetState createState() => _ModifyBottomSheetState();
 }
 
 double torty;
+double amount;
 double quality;
 
 class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
@@ -44,7 +55,7 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
 
   @override
   void initState() {
-    quality = torty = 2.5;
+    quality = torty = amount = 2.5;
     _decorator = InputDecoration(
         border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(25),
@@ -66,6 +77,8 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    GoogleSignInAccount account =
+        Provider.of<LogState>(context, listen: false).currentUser;
     InputDecoration _decorator = InputDecoration(
         border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(25),
@@ -87,58 +100,62 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50), topRight: Radius.circular(50)),
           ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Text(
-                  "Modifica a tu gusto...",
-                  style: TextStyle(fontSize: 20),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  child: Container(
-                    margin: EdgeInsets.only(top: 15),
-                    height: MediaQuery.of(context).size.height / 3.5,
-                    child: rive.Rive(
-                      artboard: _riveArtboard,
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Text(
+                    widget.name,
+                    style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    child: Container(
+                      margin: EdgeInsets.only(top: 15),
+                      height: MediaQuery.of(context).size.height / 3.5,
+                      child: rive.Rive(
+                        artboard: _riveArtboard,
+                      ),
                     ),
                   ),
-                ),
-                priceField(
-                  controller: _controllers[0],
-                  decorator: _decorator,
-                  p: widget.p,
-                ),
-                tortyField(value: widget.t_p),
-                qualityField(value: widget.q_p),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    RaisedButton.icon(
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          FirebaseInterface f = FirebaseInterface();
-                          f.update(double.tryParse(_controllers[0].text), torty,
-                              quality, widget.id);
+                  priceField(
+                    controller: _controllers[0],
+                    decorator: _decorator,
+                    p: widget.p,
+                  ),
+                  quantityField(
+                    value: widget.amount,
+                  ),
+                  qualityField(value: widget.q_p),
+                  tortyField(value: widget.t_p),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      RaisedButton.icon(
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            update(double.tryParse(_controllers[0].text), torty,
+                                quality,amount,  widget.id + '_' + account.email);
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        icon: Icon(Icons.check),
+                        label: Text("Aceptar"),
+                        shape: StadiumBorder(),
+                      ),
+                      RaisedButton.icon(
+                        onPressed: () {
                           Navigator.of(context).pop();
-                        }
-                      },
-                      icon: Icon(Icons.check),
-                      label: Text("Aceptar"),
-                      shape: StadiumBorder(),
-                    ),
-                    RaisedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(Icons.cancel_outlined),
-                      label: Text("Cancelar"),
-                      shape: StadiumBorder(),
-                    ),
-                  ],
-                ),
-              ],
+                        },
+                        icon: Icon(Icons.cancel_outlined),
+                        label: Text("Cancelar"),
+                        shape: StadiumBorder(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ));
@@ -218,7 +235,7 @@ class _tortyFieldState extends State<tortyField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+      padding: const EdgeInsets.only(top: 4, bottom: 4, left: 13),
       child: Container(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -237,7 +254,7 @@ class _tortyFieldState extends State<tortyField> {
                 itemCount: 5,
                 itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                 itemBuilder: (context, _) => Icon(
-                  Icons.restaurant_menu,
+                  Icons.whatshot_outlined,
                   //TODO Cambiar el icono para que sean tortillas o tenedores !
                   color: Colors.amber,
                 ),
@@ -299,7 +316,7 @@ class _qualityFieldState extends State<qualityField> {
                 itemCount: 5,
                 itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                 itemBuilder: (context, _) => Icon(
-                  Icons.star,
+                  Icons.restaurant_menu,
                   //TODO Cambiar el icono para que sean tortillas o tenedores !
                   color: Colors.amber,
                 ),
@@ -307,6 +324,68 @@ class _qualityFieldState extends State<qualityField> {
                   _currValue = rating;
                   setState(() {
                     quality = _currValue;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: Colors.black38)),
+      ),
+    );
+  }
+}
+
+class quantityField extends StatefulWidget {
+  double value;
+
+  quantityField({this.value});
+
+  @override
+  _quantityFieldState createState() => _quantityFieldState();
+}
+
+class _quantityFieldState extends State<quantityField> {
+  double _currValue;
+
+  @override
+  void initState() {
+    _currValue = widget.value;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text("Cantidad",
+                style: TextStyle(color: Colors.black54, fontSize: 16)),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: RatingBar.builder(
+                itemSize: 37,
+                glowColor: Colors.amber,
+                initialRating: _currValue,
+                minRating: 0.5,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => Icon(
+                  Icons.free_breakfast,
+                  //TODO Cambiar el icono para que sean tortillas o tenedores !
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  _currValue = rating;
+                  setState(() {
+                    amount = _currValue;
                   });
                 },
               ),

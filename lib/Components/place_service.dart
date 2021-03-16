@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart';
 
 class Place {
-  String name, formatted_address, icon,url, id, coordinates;
+  String name, formatted_address, icon,url, id, coordinates_lat,coordinates_lon;
 
   Place({
     this.name,
@@ -13,7 +13,8 @@ class Place {
     this.icon,
     this.url,
     this.id,
-    this.coordinates
+    this.coordinates_lat,
+    this.coordinates_lon
   });
 
   @override
@@ -41,14 +42,15 @@ class PlaceApiProvider {
 
   final sessionToken;
 
-  static final String androidKey = 'AIzaSyDkXUAPkt4Zy16EFyjtQMRuc830jcEAVSw';
+  static final String androidKey = '';
   static final String iosKey = 'YOUR_API_KEY_HERE';
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
   Future<List<Place>> fetchSuggestions(String input, String lang,String lon, String lat) async {
     final request =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=establishment&components=country:es&language=$lang&key=$apiKey&sessiontoken=$sessionToken&location=$lat,$lon&radius=200&strictbounds=true';
-    final response = await client.get(request);
+    final Uri url=Uri.parse(request);
+    final response = await client.get(url);
 
     if (response.statusCode == 200) {
       final result = json.decode(response.body);
@@ -76,7 +78,8 @@ class PlaceApiProvider {
   Future<Place> getPlaceDetailFromId(String placeId) async {
     final request =
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=name,formatted_address,icon,url,geometry&key=$apiKey&sessiontoken=$sessionToken';
-    final response = await client.get(request);
+    final Uri url=Uri.parse(request);
+    final response = await client.get(url);
 
     if (response.statusCode == 200) {
       final result = json.decode(response.body);
@@ -87,7 +90,8 @@ class PlaceApiProvider {
         place.name=result['result']['name'];
         place.icon=result['result']['icon'];
         place.url=result['result']['url'];
-        place.coordinates=result['result']['geometry']['location']['lat'].toString()+';'+result['result']['geometry']['location']['lng'].toString();
+        place.coordinates_lat=result['result']['geometry']['location']['lat'].toString();
+        place.coordinates_lon=result['result']['geometry']['location']['lng'].toString();
         place.id=placeId;
         return place;
       }

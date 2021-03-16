@@ -5,69 +5,86 @@ import 'package:provider/provider.dart';
 import 'package:torty_test_1/Components/AddScreen_fields.dart';
 import 'package:torty_test_1/Components/FirebaseInterface.dart';
 import 'package:torty_test_1/Components/Tortilla.dart';
+import 'package:torty_test_1/Components/location_service.dart';
 import 'package:torty_test_1/Components/place_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rive/rive.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import '../main.dart';
 
 //TODO Clean-up code!!!!
 //TODO Implement this https://github.com/AndreHaueisen/flushbar for location sites nearby
 //TODO add user info to know who uploaded the tortilla
+//TODO Evitar más de una pulsación en localización
+//TODO Cambiar localizacion para que aparezca una lista al principio, igual que en busqueda
 
 class AddScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: "add_btn",
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Añade tu tortilla',
-            style: TextStyle(color: Colors.black),
-          ),
-          backgroundColor: Colors.amberAccent,
-          iconTheme: IconThemeData(color: Colors.black),
-          centerTitle: true,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Añade tu tortilla',
+          style: TextStyle(color: Colors.black),
         ),
-        body: ChangeNotifierProvider<SlidersState>(
-          create: (_) => SlidersState(),
-          child: AddForm(),
-        ),
+        backgroundColor: Colors.amberAccent,
+        iconTheme: IconThemeData(color: Colors.black),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 10.0),
+            child: IconButton(
+              icon: Icon(
+                Icons.info_outline,
+                size: 26.0,
+              ),
+              onPressed: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (BuildContext dialogContext) {
+                    return AlertDialog(
+                      backgroundColor: Colors.amberAccent[100],
+                      title: Text(
+                        'Añadir Tortilla',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      content: Text('Añade las tortillas, indica:\n'
+                          ' -Precio\n'
+                          ' -Sabrosura: Jugosidad de la tortilla\n'
+                          ' -Cantidad: ¿Te ha llenado el pincho?\n'
+                          ' -Puntos Torty: En general, ¿Cuál sería la puntuación?'),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Cerrar'),
+                          onPressed: () {
+                            Navigator.of(dialogContext)
+                                .pop(); // Dismiss alert dialog
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              tooltip: "Información acerca de esta pantalla",
+            ),
+          )
+        ],
+      ),
+      body: ChangeNotifierProvider<SlidersState>(
+        create: (_) => SlidersState(),
+        child: AddForm(),
       ),
     );
   }
 }
 
-class AddForm extends StatefulWidget {
-  @override
-  _AddFormState createState() => _AddFormState();
-}
+class riveAnim extends StatelessWidget {
+  final Artboard _riveArtboard;
 
-class _AddFormState extends State<AddForm> {
-  final _formKey = GlobalKey<FormState>();
-  List<TextEditingController> _controllers;
-  RiveAnimationController _controller;
-  Artboard _riveArtboard;
-
-  @override
-  void initState() {
-    _controllers = [for (int i = 0; i < 7; i++) TextEditingController()];
-    super.initState();
-    rootBundle.load('assets/rive/eyes_search.riv').then(
-      (data) async {
-        final file = RiveFile();
-        if (file.import(data)) {
-          final artboard = file.mainArtboard;
-          artboard.addController(_controller = SimpleAnimation('Idle'));
-          setState(() => _riveArtboard = artboard);
-        }
-      },
-    );
-  }
+  riveAnim(this._riveArtboard);
 
   _getRandomPhrase() {
     List<String> phrases = [
@@ -93,20 +110,99 @@ class _AddFormState extends State<AddForm> {
 
   @override
   Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        var rng = new Random();
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        if (rng.nextInt(30) == 1) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Has descubierto un secreto!"),
+            behavior: SnackBarBehavior.floating,
+            shape: StadiumBorder(),
+            elevation: 10,
+            duration: Duration(seconds: 50),
+            action: SnackBarAction(
+              label: "Llévame al secreto",
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.of(context).pushNamed("/secret");
+              },
+            ),
+          ));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              _getRandomPhrase(),
+              textAlign: TextAlign.center,
+            ),
+            behavior: SnackBarBehavior.floating,
+            shape: StadiumBorder(),
+            elevation: 10,
+          ));
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.only(top: 15),
+        height: MediaQuery.of(context).size.height / 3.5,
+        child: Rive(
+          artboard: _riveArtboard,
+        ),
+      ),
+    );
+  }
+}
+
+class AddForm extends StatefulWidget {
+  @override
+  _AddFormState createState() => _AddFormState();
+}
+
+class _AddFormState extends State<AddForm> {
+  final _formKey = GlobalKey<FormState>();
+  List<TextEditingController> _controllers;
+  RiveAnimationController _controller;
+  Artboard _riveArtboard;
+  bool clicked;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    clicked = false;
+    _controllers = [for (int i = 0; i < 8; i++) TextEditingController()];
+    super.initState();
+    rootBundle.load('assets/rive/eyes_search.riv').then(
+      (data) async {
+        final file = RiveFile();
+        if (file.import(data)) {
+          final artboard = file.mainArtboard;
+          artboard.addController(_controller = SimpleAnimation('Idle'));
+          setState(() => _riveArtboard = artboard);
+        }
+      },
+    );
+  }
+
+  final InputDecoration _decorator = InputDecoration(
+      border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(25),
+    borderSide: const BorderSide(),
+  ));
+
+  @override
+  Widget build(BuildContext context) {
     GoogleSignInAccount account =
         Provider.of<LogState>(context, listen: false).currentUser;
-    FirebaseInterface f = FirebaseInterface();
-    InputDecoration _decorator = InputDecoration(
-        border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(25),
-      borderSide: BorderSide(),
-    ));
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               image: DecorationImage(
                   image: AssetImage(
                       "assets/images/backgrounds/background_home.jpg"),
@@ -115,56 +211,12 @@ class _AddFormState extends State<AddForm> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  var rng = new Random();
-                  Scaffold.of(context).hideCurrentSnackBar();
-                  if (rng.nextInt(30) == 1) {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text("Has descubierto un secreto!"),
-                      behavior: SnackBarBehavior.floating,
-                      shape: StadiumBorder(),
-                      elevation: 10,
-                      duration: Duration(seconds: 50),
-                      action: SnackBarAction(
-                        label: "Llévame al secreto",
-                        textColor: Colors.white,
-                        onPressed: () {
-                          Navigator.of(context).pushNamed("/secret");
-                        },
-                      ),
-                    ));
-                  } else {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                        _getRandomPhrase(),
-                        textAlign: TextAlign.center,
-                      ),
-                      behavior: SnackBarBehavior.floating,
-                      shape: StadiumBorder(),
-                      elevation: 10,
-                    ));
-                  }
-                },
-                child: SizedBox(
-                  child: Container(
-                    margin: EdgeInsets.only(top: 15),
-                    height: MediaQuery.of(context).size.height / 3.5,
-                    child: Rive(
-                      artboard: _riveArtboard,
-                    ),
-                  ),
-                ),
-              ),
+              riveAnim(_riveArtboard),
               descField(controllers: _controllers, decorator: _decorator),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  priceField(controllers: _controllers, decorator: _decorator),
-                  _locationField(_controllers),
-                ],
-              ),
+              price_location_row(
+                  controllers: _controllers, decorator: _decorator),
               qualityField(controllers: _controllers, decorator: _decorator),
+              quantityField(controllers: _controllers, decorator: _decorator),
               tortyField(controllers: _controllers, decorator: _decorator),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -175,17 +227,17 @@ class _AddFormState extends State<AddForm> {
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           if (_controllers[2].text.isEmpty) {
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                              content: Text(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text(
                                   'Por favor, introduce una localización.'),
                               behavior: SnackBarBehavior.floating,
                               shape: StadiumBorder(),
                               elevation: 10,
                             ));
                           } else {
-                            Scaffold.of(context).hideCurrentSnackBar();
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                              content: Text('Procesando...'),
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text('Procesando...'),
                               behavior: SnackBarBehavior.floating,
                               shape: StadiumBorder(),
                               elevation: 10,
@@ -194,13 +246,14 @@ class _AddFormState extends State<AddForm> {
                             Place place = Place(
                                 name: _controllers[2].text,
                                 formatted_address: _controllers[4].text,
-                                coordinates: _controllers[5].text,
+                                coordinates_lat: _controllers[5].text,
+                                coordinates_lon: _controllers[7].text,
                                 id: _controllers[0].text,
                                 url: _controllers[6].text);
                             User user = User(
                                 email: account.email,
                                 name: account.displayName);
-                            f.pushTortilla(Tortilla(
+                            pushTortilla(Tortilla(
                                 description: _controllers[1].text,
                                 price: double.tryParse(_controllers[3].text),
                                 quality: Provider.of<SlidersState>(context,
@@ -209,6 +262,9 @@ class _AddFormState extends State<AddForm> {
                                 torty_points: Provider.of<SlidersState>(context,
                                         listen: false)
                                     .t_state,
+                                amount: Provider.of<SlidersState>(context,
+                                        listen: false)
+                                    .amount_state,
                                 location: place,
                                 id: place.id,
                                 user: user));
@@ -221,17 +277,17 @@ class _AddFormState extends State<AddForm> {
                           }
                         }
                       },
-                      icon: Icon(Icons.check),
-                      label: Text("Aceptar"),
-                      shape: StadiumBorder(),
+                      icon: const Icon(Icons.check),
+                      label: const Text("Aceptar"),
+                      shape: const StadiumBorder(),
                     ),
                     RaisedButton.icon(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      icon: Icon(Icons.cancel),
-                      label: Text("Cancelar"),
-                      shape: StadiumBorder(),
+                      icon: const Icon(Icons.cancel),
+                      label: const Text("Cancelar"),
+                      shape: const StadiumBorder(),
                     ),
                   ],
                 ),
@@ -241,44 +297,32 @@ class _AddFormState extends State<AddForm> {
         ),
       ),
     );
-    ;
   }
 }
 
-/// Determine the current position of the device.
-///
-/// When the location services are not enabled or permissions
-/// are denied the `Future` will return an error.
-Future<Position> _determinePosition() async {
-  bool serviceEnabled;
-  LocationPermission permission;
+class price_location_row extends StatelessWidget {
+  const price_location_row({
+    Key key,
+    @required List<TextEditingController> controllers,
+    @required InputDecoration decorator,
+  })  : _controllers = controllers,
+        _decorator = decorator,
+        super(key: key);
 
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    await Geolocator.openLocationSettings();
-    return Future.error('Location services are disabled.');
-  }
+  final List<TextEditingController> _controllers;
+  final InputDecoration _decorator;
 
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.deniedForever) {
-    return Future.error(
-        'Location permissions are permantly denied, we cannot request permissions.');
-  }
-
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission != LocationPermission.whileInUse &&
-        permission != LocationPermission.always) {
-      return Future.error(
-          'Location permissions are denied (actual value: $permission).');
-    }
-  }
-  try {
-    return await Geolocator.getCurrentPosition(
-        timeLimit: Duration(seconds: 7),
-        desiredAccuracy: LocationAccuracy.high);
-  } catch (e) {
-    return await Geolocator.getLastKnownPosition();
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        priceField(controllers: _controllers, decorator: _decorator),
+        _locationField(
+          _controllers,
+        ),
+      ],
+    );
   }
 }
 
@@ -314,12 +358,12 @@ class _BottomSheetState extends State<BottomSheet> {
         ),
         child: Column(
           children: [
-            Text(
+            const Text(
               "Elige el creador de la tortilla...",
               style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             ),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
             TextFormField(
@@ -350,7 +394,6 @@ class _BottomSheetState extends State<BottomSheet> {
                     for (Place p in suggestions)
                       ListTile(
                         onTap: () {
-                          //TODO take the selected and show snackbar in addScreen
                           print("Ha seleccionado ${p.name}");
                           Navigator.pop(context, p);
                         },
@@ -381,25 +424,44 @@ class _locationField extends StatefulWidget {
 }
 
 class __locationFieldState extends State<_locationField> {
+  bool clicked;
   List<TextEditingController> controllers;
 
   __locationFieldState(this.controllers);
+
+  @override
+  void initState() {
+    clicked = false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
         child: OutlineButton.icon(
-          shape: StadiumBorder(),
-          borderSide: BorderSide(color: Colors.black45),
-          padding: EdgeInsets.all(18),
-          icon: Icon(
+          shape: const StadiumBorder(),
+          borderSide: const BorderSide(color: Colors.black45),
+          padding: const EdgeInsets.all(18),
+          icon: const Icon(
             Icons.location_on,
             color: Colors.black54,
           ),
-          label: Text("Localización"),
+          label: const Text("Localización"),
           onPressed: () {
-            _determinePosition().then((value) {
+            if (clicked == true) return null;
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Calculando ubicación...Por favor espere..."),
+              behavior: SnackBarBehavior.floating,
+              shape: StadiumBorder(),
+              elevation: 10,
+              duration: Duration(seconds: 2),
+            ));
+            setState(() {
+              clicked = true;
+            });
+            determinePosition().then((value) {
               print(value);
               showModalBottomSheet(
                   isScrollControlled: true,
@@ -408,20 +470,27 @@ class __locationFieldState extends State<_locationField> {
                   context: context,
                   builder: (context) => SingleChildScrollView(
                       child: BottomSheet(controllers[2], value))).then((value) {
-                controllers[2].value = TextEditingValue(text: value.name);
-                controllers[0].value = TextEditingValue(text: value.id);
-                controllers[6].value = TextEditingValue(text: value.url);
-                controllers[4].value =
-                    TextEditingValue(text: value.formatted_address);
-                controllers[5].value =
-                    TextEditingValue(text: value.coordinates);
-
-                return Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text("Has seleccionado: ${value.name}"),
-                  behavior: SnackBarBehavior.floating,
-                  shape: StadiumBorder(),
-                  elevation: 10,
-                ));
+                if (value != null) {
+                  controllers[2].value = TextEditingValue(text: value.name);
+                  controllers[0].value = TextEditingValue(text: value.id);
+                  controllers[6].value = TextEditingValue(text: value.url);
+                  controllers[4].value =
+                      TextEditingValue(text: value.formatted_address);
+                  controllers[5].value =
+                      TextEditingValue(text: value.coordinates_lat);
+                  controllers[7].value =
+                      TextEditingValue(text: value.coordinates_lon);
+                  return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("Has seleccionado: ${value.name}"),
+                    behavior: SnackBarBehavior.floating,
+                    shape: StadiumBorder(),
+                    elevation: 10,
+                  ));
+                }
+              });
+            }).then((value) {
+              setState(() {
+                clicked = false;
               });
             });
           },

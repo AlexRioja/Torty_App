@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:torty_test_1/Screens/ChatScreen.dart';
+import 'package:torty_test_1/Screens/MapScreen.dart';
 import 'Screens/AddScreen.dart';
 import 'Screens/HomeScreen.dart';
-import 'Screens/ProfileInfo.dart';
 import 'Screens/SecretScreen.dart';
 import 'Screens/SettingsScreen.dart';
+import 'package:feature_discovery/feature_discovery.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +36,7 @@ class LogState with ChangeNotifier {
         _isLogged = true;
       }
     });
+
     await _googleSignIn.signInSilently();
     notifyListeners();
   }
@@ -52,7 +55,6 @@ class LogState with ChangeNotifier {
       print(err);
     }
   }
-
   logout() {
     _googleSignIn.signOut();
     _isLogged = false;
@@ -65,23 +67,24 @@ class Torty_App extends StatelessWidget {
     Color main = Colors.amber;
     return ChangeNotifierProvider<LogState>(
       create: (_) => LogState(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        //theme: ThemeData(primarySwatch: Colors.lime,fontFamily: "",brightness: Brightness.dark),
-        theme: ThemeData(
-          fontFamily: "Nunito",
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          primarySwatch: Colors.purple
+      child: FeatureDiscovery(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          //theme: ThemeData(primarySwatch: Colors.lime,fontFamily: "",brightness: Brightness.dark),
+          theme: ThemeData(
+              fontFamily: "Nunito",
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              primarySwatch: Colors.purple),
+          title: 'Torty',
+          routes: {
+            '/': (context) => HomeScreen(),
+            '/add': (context) => AddScreen(),
+            '/settings': (context) => SettingsScreen(),
+            '/secret': (context) => SecretScreen(),
+            '/map': (context) => MapScreen(),
+            '/chat': (context) => ChatScreen()
+          },
         ),
-        //TODO Big todo, cambiar todo el tema a dark ThemeData.dark() y hacer que todo cuadre o poner color amarillo clarito a todo
-        title: 'Torty',
-        routes: {
-          '/': (context) => HomeScreen(),
-          '/add': (context) => AddScreen(),
-          '/userInfo': (context) => ProfileInfo(),
-          '/settings': (context) => SettingsScreen(),
-          '/secret': (context) => SecretScreen()
-        },
       ),
     );
   }

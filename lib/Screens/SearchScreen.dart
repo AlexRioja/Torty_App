@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:torty_test_1/Components/ModifyBottomSheet.dart';
+import 'package:torty_test_1/Components/location_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
+import 'package:feature_discovery/feature_discovery.dart';
 
 class SearchScreen extends StatelessWidget {
   @override
@@ -14,43 +16,70 @@ class SearchScreen extends StatelessWidget {
     GoogleSignInAccount account =
         Provider.of<LogState>(context, listen: false).currentUser;
     return Scaffold(
+        floatingActionButton: DescribedFeatureOverlay(
+          featureId: 'map',
+          tapTarget: Icon(Icons.map),
+          title: Text("Vista de mapa"),
+          overflowMode: OverflowMode.extendBackground,
+          contentLocation: ContentLocation.above,
+          description: Text(
+              "Aquí podrás ver las localizaciones de tus tortillas y las de tus amigos!"),
+          child: FloatingActionButton.extended(
+            onPressed: () {
+              determinePosition();
+              Navigator.of(context).pushNamed('/map');
+            },
+            label: Text("Ver el mapa!"),
+            icon: Icon(Icons.map),
+          ),
+        ),
         appBar: AppBar(
           actions: [
             Padding(
                 padding: EdgeInsets.only(right: 10.0),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.info_outline,
-                    size: 26.0,
-                  ),
-                  onPressed: () {
-                    showDialog<void>(
-                      context: context,
-                      builder: (BuildContext dialogContext) {
-                        return AlertDialog(
-                          backgroundColor: Colors.amberAccent[100],
-                          title: Text(
-                            'Pantalla de Búsqueda',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          content: Text('Aquí encontrarás todas tus tortillas. '
-                              'Puedes filtrar los resultados por el nombre de la '
-                              'ciudad, de la calle o del restaurante!\n'
-                              'Desliza los items hacia izquierda y derecha para ver las opciones.'),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text('Cerrar'),
-                              onPressed: () {
-                                Navigator.of(dialogContext)
-                                    .pop(); // Dismiss alert dialog
-                              },
+                child: DescribedFeatureOverlay(
+                  featureId: "info",
+                  tapTarget: Icon(Icons.info_outline),
+                  title: Text("Iconos de información"),
+                  description: Text(
+                      "Pincha en estos iconos siempre que necesites algo de info!"),
+                  overflowMode: OverflowMode.extendBackground,
+                  contentLocation: ContentLocation.below,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.info_outline,
+                      size: 26.0,
+                    ),
+                    onPressed: () {
+                      showDialog<void>(
+                        context: context,
+                        builder: (BuildContext dialogContext) {
+                          return AlertDialog(
+                            backgroundColor: Colors.amberAccent[100],
+                            title: Text(
+                              'Pantalla de Búsqueda',
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  tooltip: "Información acerca de esta pantalla",
+                            content: Text(
+                                'Aquí encontrarás todas tus tortillas. '
+                                'Puedes filtrar los resultados por el nombre de la '
+                                'ciudad, de la calle o del restaurante!\n'
+                                'Desliza los items hacia izquierda y derecha para ver las opciones.'),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('Cerrar'),
+                                onPressed: () {
+                                  Navigator.of(dialogContext)
+                                      .pop(); // Dismiss alert dialog
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    tooltip: "Información acerca de esta pantalla",
+                  ),
                 ))
           ],
           leading: Icon(Icons.search),
@@ -88,7 +117,6 @@ class Search_body extends StatefulWidget {
 }
 
 class _Search_bodyState extends State<Search_body> {
-  FirebaseInterface f = FirebaseInterface();
   List _allResults = [];
   List _filteredResults = [];
   TextEditingController _controller;
@@ -96,7 +124,7 @@ class _Search_bodyState extends State<Search_body> {
   @override
   void initState() {
     _controller = TextEditingController();
-    f.getAllTortillas(widget.email).then((value) {
+    getAllTortillas(widget.email).then((value) {
       _allResults = value;
       _filterList();
     });
@@ -143,14 +171,26 @@ class _Search_bodyState extends State<Search_body> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: AnimSearchBar(
-            width: MediaQuery.of(context).size.width / 1.05,
-            helpText: "Busca sin miedo...",
-            closeSearchOnSuffixTap: true,
-            onSuffixTap: () {
-              _controller.clear();
-            },
-            textController: _controller,
+          child: DescribedFeatureOverlay(
+            featureId: "search",
+            tapTarget: Icon(Icons.search),
+            overflowMode: OverflowMode.extendBackground,
+            contentLocation: ContentLocation.below,
+            title: Text("Filtra los resultados"),
+            description: Text(
+                "Puedes buscar por ciudad, calle o nombre del bar.\n"
+                "No olvides que puedes deslizar hacia izquierda o derecha para ver las opciones!!"),
+            backgroundColor: Colors.blueAccent,
+            textColor: Colors.black,
+            child: AnimSearchBar(
+              width: MediaQuery.of(context).size.width / 1.05,
+              helpText: "Busca sin miedo...",
+              closeSearchOnSuffixTap: true,
+              onSuffixTap: () {
+                _controller.clear();
+              },
+              textController: _controller,
+            ),
           ),
         ),
         Padding(
@@ -159,14 +199,16 @@ class _Search_bodyState extends State<Search_body> {
             "Desliza los items hacia izquierda y derecha para ver las opciones.",
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.deepPurple),
           ),
         ),
         Expanded(
             child: ListView.builder(
           itemBuilder: (context, index) {
-            return SlidableTile(data: _filteredResults, index: index);
+            return SlidableTile(
+                data: _filteredResults, index: index, email: widget.email);
           },
           itemCount: _filteredResults.length,
         ))
@@ -178,8 +220,9 @@ class _Search_bodyState extends State<Search_body> {
 class SlidableTile extends StatelessWidget {
   List data = [];
   int index;
+  String email;
 
-  SlidableTile({this.data, this.index});
+  SlidableTile({this.data, this.index, this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -188,10 +231,10 @@ class SlidableTile extends StatelessWidget {
         title: Text(data[index]["location"]["name"]),
         subtitle: Text(data[index]["location"]["address"]),
         onTap: () {},
-        leading: Icon(Icons.restaurant),
+        leading: const Icon(Icons.restaurant),
         isThreeLine: true,
       ),
-      actionPane: SlidableDrawerActionPane(),
+      actionPane: const SlidableDrawerActionPane(),
       actions: <Widget>[
         IconSlideAction(
           caption: 'Llévame',
@@ -208,7 +251,6 @@ class SlidableTile extends StatelessWidget {
           color: Colors.black45,
           icon: Icons.update,
           onTap: () => {
-            //TODO añadir puntuación a la tortilla
             showModalBottomSheet(
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
@@ -220,6 +262,8 @@ class SlidableTile extends StatelessWidget {
                   p: data[index]['price'],
                   q_p: data[index]['quality'],
                   t_p: data[index]['torty_points'],
+                  name: data[index]['location']['name'],
+                  amount: data[index]['amount'],
                 ),
               ),
             )
@@ -230,8 +274,7 @@ class SlidableTile extends StatelessWidget {
           color: Colors.red,
           icon: Icons.delete,
           onTap: () {
-            FirebaseInterface f = FirebaseInterface();
-            f.delete(data[index]['id']);
+            delete(data[index]['id'] + '_' + email);
             Scaffold.of(context).showSnackBar(SnackBar(
               content: Text(
                 'Borrado. La lista se actualizará al volver a esta pantalla...',

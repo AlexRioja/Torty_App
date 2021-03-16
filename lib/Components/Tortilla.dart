@@ -12,7 +12,7 @@ class Tortilla {
   Place location;
 
 //TODO Variable location, con la información de la localización del bar
-  double quality, price, torty_points;
+  double quality, price, torty_points, amount;
   User user;
 
   Tortilla(
@@ -20,6 +20,7 @@ class Tortilla {
       @required this.description,
       @required this.quality,
       @required this.price,
+      @required this.amount,
       @required this.torty_points,
       @required this.id,
       @required this.user});
