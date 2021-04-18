@@ -18,8 +18,8 @@ logUser(GoogleSignInAccount gAccount) async{
 }
 
 ///Get 5 best tortillas for current user
-getFavs(String email){
-  return FirebaseFirestore.instance
+ getFavs(String email) {
+  return  FirebaseFirestore.instance
       .collection("tortillas")
       .orderBy("torty_points", descending: true)
       .limit(5)

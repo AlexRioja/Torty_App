@@ -10,6 +10,8 @@ import 'Screens/HomeScreen.dart';
 import 'Screens/SecretScreen.dart';
 import 'Screens/SettingsScreen.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,71 +22,27 @@ void main() async {
   runApp(Torty_App());
 }
 
-class LogState with ChangeNotifier {
-  bool _isLogged = false;
-  GoogleSignInAccount _currentUser;
-
-  GoogleSignInAccount get currentUser => _currentUser;
-  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
-
-  bool get isLogged => _isLogged;
-
-  initLog() async {
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-      _currentUser = account;
-      if (_currentUser != null) {
-        _isLogged = true;
-      }
-    });
-
-    await _googleSignIn.signInSilently();
-    notifyListeners();
-  }
-
-  set isLogged(bool value) {
-    _isLogged = value;
-    notifyListeners();
-  }
-
-  login() async {
-    try {
-      await _googleSignIn.signIn();
-      _isLogged = true;
-      notifyListeners();
-    } catch (err) {
-      print(err);
-    }
-  }
-  logout() {
-    _googleSignIn.signOut();
-    _isLogged = false;
-  }
-}
-
 class Torty_App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color main = Colors.amber;
-    return ChangeNotifierProvider<LogState>(
-      create: (_) => LogState(),
-      child: FeatureDiscovery(
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          //theme: ThemeData(primarySwatch: Colors.lime,fontFamily: "",brightness: Brightness.dark),
-          theme: ThemeData(
-              fontFamily: "Nunito",
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-              primarySwatch: Colors.purple),
-          title: 'Torty',
-          routes: {
-            '/': (context) => HomeScreen(),
-            '/add': (context) => AddScreen(),
-            '/settings': (context) => SettingsScreen(),
-            '/secret': (context) => SecretScreen(),
-            '/map': (context) => MapScreen(),
-            '/chat': (context) => ChatScreen()
-          },
-        ),
+    return FeatureDiscovery(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        //theme: ThemeData(primarySwatch: Colors.lime,fontFamily: "",brightness: Brightness.dark),
+        theme: ThemeData(
+            fontFamily: "Nunito",
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            primarySwatch: Colors.purple),
+        title: 'Torty',
+        routes: {
+          '/': (context) => HomeScreen(),
+          '/add': (context) => AddScreen(),
+          '/settings': (context) => SettingsScreen(),
+          '/secret': (context) => SecretScreen(),
+          '/map': (context) => MapScreen(),
+          '/chat': (context) => ChatScreen()
+        },
       ),
     );
   }

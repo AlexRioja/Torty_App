@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -9,8 +10,6 @@ import 'package:torty_test_1/Components/location_service.dart';
 import 'package:torty_test_1/Components/place_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rive/rive.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import '../main.dart';
 
 //TODO Clean-up code!!!!
 //TODO Implement this https://github.com/AndreHaueisen/flushbar for location sites nearby
@@ -114,7 +113,7 @@ class riveAnim extends StatelessWidget {
       onPressed: () {
         var rng = new Random();
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        if (rng.nextInt(30) == 1) {
+        if (rng.nextInt(20) == 1) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("Has descubierto un secreto!"),
             behavior: SnackBarBehavior.floating,
@@ -195,8 +194,7 @@ class _AddFormState extends State<AddForm> {
 
   @override
   Widget build(BuildContext context) {
-    GoogleSignInAccount account =
-        Provider.of<LogState>(context, listen: false).currentUser;
+    User user = FirebaseAuth.instance.currentUser;
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -250,9 +248,9 @@ class _AddFormState extends State<AddForm> {
                                 coordinates_lon: _controllers[7].text,
                                 id: _controllers[0].text,
                                 url: _controllers[6].text);
-                            User user = User(
-                                email: account.email,
-                                name: account.displayName);
+                            UserT u = UserT(
+                                email: user.email,
+                                name: user.displayName);
                             pushTortilla(Tortilla(
                                 description: _controllers[1].text,
                                 price: double.tryParse(_controllers[3].text),
@@ -267,7 +265,7 @@ class _AddFormState extends State<AddForm> {
                                     .amount_state,
                                 location: place,
                                 id: place.id,
-                                user: user));
+                                user: u));
                             Future.delayed(const Duration(milliseconds: 1500),
                                 () {
                               setState(() {

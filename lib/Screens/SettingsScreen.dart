@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:torty_test_1/Components/SharedPreferencesInterface.dart';
@@ -75,12 +76,7 @@ class Settings_column extends StatelessWidget {
                 Navigator.of(context).pushNamed('/chat');
               },
               child: Text("¿Curioso? ;)")),
-          RaisedButton(
-              onPressed: () {
-                Provider.of<LogState>(context, listen: false).logout();
-                //Navigator.of(context).pop();
-              },
-              child: Icon(Icons.logout))
+
         ],
       ),
     );
@@ -438,10 +434,9 @@ class _ProfileState extends State<Profile> {
 }
 
 class Profile_up extends StatelessWidget {
+  User user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
-    GoogleSignInAccount account =
-        Provider.of<LogState>(context, listen: false).currentUser;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -458,15 +453,15 @@ class Profile_up extends StatelessWidget {
                 ),
               ],
               borderRadius: BorderRadius.circular(15),
-              image: DecorationImage(image: NetworkImage(account.photoUrl))),
+              image: DecorationImage(image: NetworkImage(user.photoURL))),
         ),
         SizedBox(height: 2),
         Text(
-          account.displayName,
+          user.displayName,
           style: TextStyle(color: Colors.black, fontSize: 22),
         ),
         Text(
-          account.email,
+          user.email,
           style: TextStyle(color: Colors.black54, fontSize: 16),
         ),
       ],

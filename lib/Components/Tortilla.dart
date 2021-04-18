@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:torty_test_1/Components/place_service.dart';
 
-class User {
+class UserT {
   String name, email;
 
-  User({this.name, this.email});
+  UserT({this.name, this.email});
 }
 
 class Tortilla {
@@ -13,7 +13,7 @@ class Tortilla {
 
 //TODO Variable location, con la información de la localización del bar
   double quality, price, torty_points, amount;
-  User user;
+  UserT user;
 
   Tortilla(
       {@required this.location,

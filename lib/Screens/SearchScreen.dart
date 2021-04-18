@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:torty_test_1/Components/FirebaseInterface.dart';
@@ -11,10 +12,9 @@ import '../main.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 
 class SearchScreen extends StatelessWidget {
+  User user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
-    GoogleSignInAccount account =
-        Provider.of<LogState>(context, listen: false).currentUser;
     return Scaffold(
         floatingActionButton: DescribedFeatureOverlay(
           featureId: 'map',
@@ -101,7 +101,7 @@ class SearchScreen extends StatelessWidget {
                 AssetImage("assets/images/backgrounds/background_search_2.png"),
             fit: BoxFit.cover,
           )),
-          child: Search_body(email: account.email),
+          child: Search_body(email: user.email),
         ));
     //child: test_2(email: account.email)));
   }

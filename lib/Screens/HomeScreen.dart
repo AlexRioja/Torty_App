@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:torty_test_1/Components/CustomWidgets.dart';
 import 'package:torty_test_1/Constants/ColorsConstants.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:torty_test_1/Screens/NewAuthMethod.dart';
 import 'package:torty_test_1/Screens/SearchScreen.dart';
 import 'package:torty_test_1/Screens/SettingsScreen.dart';
-import '../main.dart';
 import 'package:splashscreen/splashscreen.dart' as sp;
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
     return sp.SplashScreen(
       seconds: 5,
       imageBackground:
-          AssetImage('assets/images/backgrounds/background_login.png'),
+      AssetImage('assets/images/backgrounds/background_login.png'),
       loadingText: Text(_getRandomPhrase()),
       title: const Text(
         "Torty",
@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
               color: Colors.amberAccent, blurRadius: 50, offset: Offset(10, 10))
         ]),
       ),
-      navigateAfterSeconds: home(),
+      navigateAfterSeconds: AuthScreen(),
     );
   }
 
@@ -74,9 +74,6 @@ class _homeState extends State<home> with TickerProviderStateMixin {
 
   @override
   void didChangeDependencies() {
-    Provider.of<LogState>(context, listen: true).initLog();
-    isLogged = Provider.of<LogState>(context, listen: true).isLogged;
-    account = Provider.of<LogState>(context, listen: false).currentUser;
     super.didChangeDependencies();
   }
 
@@ -157,8 +154,7 @@ class _homeState extends State<home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return isLogged
-        ? Scaffold(
+    return  Scaffold(
             //body: SafeArea(child: Body(size: size)),
             body: SafeArea(
               child: PageView(
@@ -170,7 +166,6 @@ class _homeState extends State<home> with TickerProviderStateMixin {
                   Body(
                     size,
                     phrase,
-                    account.email,
                   ),
                   SearchScreen(),
                   SettingsScreen(),
@@ -196,8 +191,8 @@ class _homeState extends State<home> with TickerProviderStateMixin {
                 items: items,
               ),
             ),
-          )
-        : notLogged(size: size, riveArtboard: _riveArtboard);
+          );
+
   }
 }
 
@@ -250,7 +245,7 @@ class notLogged extends StatelessWidget {
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                   onPressed: () {
-                    Provider.of<LogState>(context, listen: false).login();
+                            //old login
                   },
                   shape: StadiumBorder(),
                   color: Colors.red,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:torty_test_1/Components/FirebaseInterface.dart';
 import 'package:torty_test_1/Components/SharedPreferencesInterface.dart';
 import 'package:torty_test_1/Components/location_service.dart';
@@ -6,17 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../main.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    GoogleSignInAccount account =
-        Provider.of<LogState>(context, listen: false).currentUser;
+
     return Scaffold(
-      body: Mapa(account),
+      body: Mapa(),
       appBar: AppBar(
         actions: [
           Padding(
@@ -69,9 +68,8 @@ class MapScreen extends StatelessWidget {
 }
 
 class Mapa extends StatefulWidget {
-  GoogleSignInAccount account;
 
-  Mapa(this.account);
+  Mapa();
 
   @override
   _MapaState createState() => _MapaState();
@@ -86,11 +84,11 @@ class _MapaState extends State<Mapa> {
   List<double> colors;
   Map<String, Color> friends_colors_bottom = {};
   List<Color> colors_bottom;
-
+  User user ;
   @override
   void initState() {
     friend = null;
-
+    user= FirebaseAuth.instance.currentUser;
     getEmails().then((value) {
       colors = [
         BitmapDescriptor.hueRed,
@@ -160,7 +158,7 @@ class _MapaState extends State<Mapa> {
                   _controller.complete(controller);
                   if (friend != null) {
                   } else {
-                    getAllTortillas(widget.account.email).then((value) {
+                    getAllTortillas(user.email).then((value) {
                       setState(() {
                         _allResults = value;
                         for (final v in value) {
@@ -245,7 +243,7 @@ class _MapaState extends State<Mapa> {
                           friend = newValue;
                           if (friend == "Ver todas!") {
                             getAllTortillasFriends(
-                                    widget.account.email, friends)
+                                    user.email, friends)
                                 .then((value) {
                               setState(() {
                                 _allResults = value;
@@ -295,7 +293,7 @@ class _MapaState extends State<Mapa> {
                             });
                           } else {
                             getAllTortillasFriends(
-                                widget.account.email, [friend])
+                                user.email, [friend])
                                 .then((value) {
                               setState(() {
                                 _allResults = value;

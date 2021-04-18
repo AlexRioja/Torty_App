@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/services.dart';
@@ -185,10 +186,11 @@ class CoolAppBar extends StatelessWidget {
 }
 
 class Body extends StatelessWidget {
-  Body(this.size, this.phrase, this.email);
+  Body(this.size, this.phrase);
 
   final Size size;
-  final String phrase, email;
+  final String phrase;
+  User user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +222,7 @@ class Body extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 35.0, vertical: 10),
               child: DescribedFeatureOverlay(
-                child: cards(email, _size),
+                child: cards(user.email, _size),
                 backgroundColor: Colors.lightGreen,
                 textColor: Colors.black,
                 targetColor: Colors.yellow,
@@ -256,12 +258,19 @@ class cards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("EMAIL ES CORRECTO POR FAVOR DIOSECITO $email");
+
     return StreamBuilder(
         stream: s,
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                Text("Cargando sus tortillas..."),
+                Text("No se olvide de añadir tortillas!"),
+              ],
             );
           }
           List<DocumentSnapshot> docs = snapshot.data.docs;
@@ -295,7 +304,7 @@ class cards extends StatelessWidget {
               viewportFraction: 0.82,
               autoPlay: true,
               autoPlayCurve: Curves.fastOutSlowIn,
-              autoPlayInterval: Duration(seconds: 12),
+              autoPlayInterval: Duration(seconds: 8),
               autoPlayAnimationDuration: Duration(milliseconds: 1800),
             ),
           );

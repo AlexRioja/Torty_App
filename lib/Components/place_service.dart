@@ -48,7 +48,7 @@ class PlaceApiProvider {
 
   Future<List<Place>> fetchSuggestions(String input, String lang,String lon, String lat) async {
     final request =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=establishment&components=country:es&language=$lang&key=$apiKey&sessiontoken=$sessionToken&location=$lat,$lon&radius=200&strictbounds=true';
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=establishment&components=country:es&language=$lang&key=$apiKey&sessiontoken=$sessionToken&location=$lat,$lon&radius=500';
     final Uri url=Uri.parse(request);
     final response = await client.get(url);
 

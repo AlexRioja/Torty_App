@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart' as rive;
@@ -52,9 +53,10 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   rive.RiveAnimationController _controller;
   rive.Artboard _riveArtboard;
-
+  User user ;
   @override
   void initState() {
+    user= FirebaseAuth.instance.currentUser;
     quality = torty = amount = 2.5;
     _decorator = InputDecoration(
         border: OutlineInputBorder(
@@ -77,8 +79,6 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    GoogleSignInAccount account =
-        Provider.of<LogState>(context, listen: false).currentUser;
     InputDecoration _decorator = InputDecoration(
         border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(25),
@@ -136,7 +136,7 @@ class _ModifyBottomSheetState extends State<ModifyBottomSheet> {
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
                             update(double.tryParse(_controllers[0].text), torty,
-                                quality,amount,  widget.id + '_' + account.email);
+                                quality,amount,  widget.id + '_' + user.email);
                             Navigator.of(context).pop();
                           }
                         },

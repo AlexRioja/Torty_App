@@ -249,8 +249,8 @@ class _SecretScreenState extends State<SecretScreen> {
 }
 
 _goToBuyMeACoffe() async {
-  if (await canLaunch("https://www.buymeacoffee.com/alexrioja")) {
-    await launch("https://www.buymeacoffee.com/alexrioja");
+  if (await canLaunch("https://github.com/AlexRioja")) {
+    await launch("https://github.com/AlexRioja");
   } else {
     throw 'Could not launch url';
   }
